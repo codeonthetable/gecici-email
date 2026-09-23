@@ -1,0 +1,374 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Mono", monospace;
+}
+
+body {
+  width: 360px;
+  background-color: #0e0f12;
+  color: #e4e5e8;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+.console-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #121419;
+  border: 1px solid #242733;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #1f222b;
+  padding-bottom: 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-mark {
+  width: 24px;
+  height: 24px;
+  background: #ff4e00;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 13px;
+  box-shadow: 0 0 10px rgba(255, 78, 0, 0.4);
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge {
+  font-size: 9px;
+  background: #1e222c;
+  color: #ff9900;
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid #2e3342;
+}
+
+.brand-subtitle {
+  font-size: 9px;
+  color: #6c7284;
+  letter-spacing: 0.5px;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #00ff66;
+  font-weight: 600;
+}
+
+.led-dot {
+  width: 6px;
+  height: 6px;
+  background: #00ff66;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #00ff66;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* LCD Panel */
+.lcd-panel {
+  background: #07080a;
+  border: 1px solid #1a1d24;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.lcd-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: rgba(255, 153, 0, 0.7);
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.lcd-address {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff9900;
+  text-shadow: 0 0 8px rgba(255, 153, 0, 0.3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: all;
+}
+
+/* Buttons */
+.action-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.btn {
+  background: #1c202a;
+  border: 1px solid #2d3344;
+  color: #e4e5e8;
+  padding: 7px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  background: #252b39;
+  border-color: #3f475d;
+}
+
+.btn-accent {
+  background: #ff4e00;
+  border-color: #ff6a26;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(255, 78, 0, 0.3);
+}
+
+.btn-accent:hover {
+  background: #ff621a;
+  border-color: #ff7d40;
+}
+
+.btn-copied {
+  background: #00ff66 !important;
+  border-color: #00cc52 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.4) !important;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 10px;
+}
+
+/* Custom Prefix Box */
+.custom-box {
+  display: flex;
+  gap: 4px;
+  background: #090a0d;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #282d3c;
+}
+
+.custom-box input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 11px;
+  font-family: monospace;
+  outline: none;
+  padding: 2px 4px;
+}
+
+/* Messages Section */
+.messages-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #6c7284;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.count-tag {
+  background: #1e222c;
+  color: #ff9900;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.messages-list {
+  max-height: 180px;
+  min-height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.messages-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: #282d3c;
+  border-radius: 2px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 10px;
+  color: #525768;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.empty-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7e879c;
+}
+
+.empty-sub {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* Message Card */
+.message-card {
+  background: #161820;
+  border: 1px solid #242938;
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message-card:hover {
+  border-color: #353c52;
+}
+
+.message-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+}
+
+.message-sender {
+  color: #00f0ff;
+  font-weight: 600;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-time {
+  color: #525768;
+  font-size: 9px;
+}
+
+.message-subject {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-otp-banner {
+  background: #090a0d;
+  border: 1px solid #ff4e00;
+  border-radius: 6px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.otp-value {
+  color: #00ff66;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.otp-btn {
+  background: #1f2432;
+  border: 1px solid #363d50;
+  color: #fff;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.otp-btn:hover {
+  background: #2b3246;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid #1f222b;
+  font-size: 9px;
+  color: #525768;
+}
+
+.footer-link {
+  color: #ff9900;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}

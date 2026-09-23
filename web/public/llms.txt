@@ -1,0 +1,118 @@
+# gecici.email — Independent & AI-Native Disposable Email Infrastructure
+
+> gecici.email is a high-speed, zero-log, privacy-first disposable email service designed specifically for autonomous AI agents, automated testing pipelines, and developer workflows. Built on a dedicated Inbound RFC 5322 SMTP gateway (Port 25) with heuristic and AI-powered OTP / Magic Link extraction, Model Context Protocol (MCP) support, Python SDK, TypeScript SDK, and real-time Server-Sent Events (SSE).
+
+## Core Capabilities for AI Agents
+
+- **Instant Zero-Auth Inboxes**: Generate randomized or custom-named disposable inboxes instantly without registration or API keys.
+- **Smart OTP Extraction**: Automatically isolates 4–8 digit verification codes (SMS-style and email OTPs) across multiple languages (TR, EN, DE, FR) via `GET /api/v1/inbox/:address/otp`.
+- **Magic Link & Action URL Extraction**: Accurately extracts account confirmation links, password reset URLs, and activation buttons via `GET /api/v1/inbox/:address/links`.
+- **Server-Sent Events (SSE)**: Real-time, millisecond-latency push stream for incoming messages via `GET /api/v1/inbox/:address/stream`.
+- **Native MCP Integration**: Official Model Context Protocol server for Claude Desktop, Cursor, Windsurf, and custom autonomous agents.
+- **Strict Privacy & TTL**: All messages and inbox metadata reside in volatile memory and are permanently purged after 60 minutes. No disk logs, zero telemetry on email contents.
+
+---
+
+## Quickstart for AI Agents
+
+### 1. Model Context Protocol (MCP) Setup
+Add to your Claude Desktop (`claude_desktop_config.json`) or Cursor MCP configuration:
+```json
+{
+  "mcpServers": {
+    "gecici-email": {
+      "command": "npx",
+      "args": ["-y", "gecici-email-mcp"]
+    }
+  }
+}
+```
+
+Available MCP Tools:
+- `gecici_create_inbox`: Generate a new disposable inbox (random or custom prefix).
+- `gecici_wait_for_otp`: Block until a verification code arrives and return the clean OTP.
+- `gecici_wait_for_magic_link`: Wait for an email and return the activation URL.
+- `gecici_get_inbox_messages`: List all messages in the inbox.
+- `gecici_get_ai_summary`: Return a token-optimized clean text summary of the latest email.
+
+---
+
+### 2. Python SDK (`pip install gecici-email`)
+```python
+from gecici import GeciciEmail
+
+client = GeciciEmail()
+
+# Option A: Context Manager (auto-deletes inbox on exit)
+with client.create_inbox() as inbox:
+    print(f"Agent Inbox: {inbox.address}")
+    # Perform signup on target website...
+    
+    # Wait up to 30 seconds for 6-digit OTP code
+    otp = inbox.wait_for_otp(timeout=30)
+    print(f"Extracted OTP: {otp}")
+
+# Option B: Direct Verification Link Extraction
+inbox = client.create_inbox(prefix="agent_bot")
+magic_link = inbox.wait_for_link(timeout=30)
+print(f"Activation Link: {magic_link}")
+inbox.delete()
+```
+
+---
+
+### 3. TypeScript / Node.js SDK (`npm install gecici-email`)
+```typescript
+import { GeciciEmail } from 'gecici-email';
+
+const client = new GeciciEmail();
+
+async function run() {
+  const inbox = await client.createInbox();
+  console.log(`Disposable Address: ${inbox.address}`);
+
+  // Wait for OTP code
+  const otp = await client.waitForOtp(inbox.address, 30);
+  console.log(`OTP Code: ${otp}`);
+
+  // Or wait for activation link
+  const link = await client.waitForMagicLink(inbox.address, 30);
+  console.log(`Verify URL: ${link}`);
+
+  await client.deleteInbox(inbox.address);
+}
+```
+
+---
+
+## REST API Reference
+
+Base URL: `https://gecici.email/api/v1`
+
+### Endpoints:
+- `POST /inbox/generate`: Creates a randomized temporary email address.
+  - Body: `{"domain": "gecici.email"}`
+  - Response: `{"success": true, "inbox": {"address": "...", "token": "...", "expiresAt": 1757271920000, "ttlSeconds": 3600}}`
+
+- `POST /inbox/custom`: Creates an inbox with a custom prefix.
+  - Body: `{"prefix": "my_agent", "domain": "gecici.email"}`
+
+- `GET /inbox/:address/otp`: Long-polls or fetches the extracted OTP code from the latest email.
+  - Query Params: `?timeout=30000` (optional timeout in ms, default 30s)
+  - Response: `{"success": true, "otp": "554901", "actionType": "verification", "sender": {...}}`
+
+- `GET /inbox/:address/links`: Returns the extracted verification / magic link URL.
+  - Response: `{"success": true, "verificationLink": "https://...", "actionText": "Verify Email"}`
+
+- `GET /inbox/:address/messages`: Lists all messages in the specified inbox.
+- `GET /inbox/:address/stream`: Server-Sent Events (SSE) stream for real-time delivery.
+- `DELETE /inbox/:address`: Purges the inbox and all associated messages immediately.
+
+---
+
+## Optional Documentation & Deep Dives
+
+- [Full Developer & API Specification](https://gecici.email/llms-full.txt): Comprehensive API schemas, curl examples, and webhook guides.
+- [Interactive API Documentation](https://gecici.email/api-dokuman): Web-based documentation with request/response explorers.
+- [AI Agents & MCP Guide](https://gecici.email/ai-ajanlar): Claude Desktop, Cursor, LangChain, and CrewAI integration tutorials.
+- [Privacy Policy & Zero-Log Guarantee](https://gecici.email/gizlilik-ve-guvenlik): Transparent explanation of ephemeral memory and security.

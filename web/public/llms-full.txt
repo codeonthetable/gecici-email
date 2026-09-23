@@ -1,0 +1,321 @@
+# gecici.email — Comprehensive Developer & AI Agent Specification (llms-full.txt)
+
+> This document is the complete, canonical technical reference for gecici.email. It contains all API routes, data structures, Model Context Protocol (MCP) definitions, SDK patterns, error codes, and architectural blueprints for autonomous agents and engineers.
+
+---
+
+## 1. Architectural Overview
+
+gecici.email operates a decoupled, zero-persistence email routing stack:
+- **Inbound SMTP Daemon (`mail.gecici.email:25`)**: A dedicated RFC 5322 receive-only mail transfer agent running on high-capacity Frankfurt, Germany infrastructure. Accepts unauthenticated incoming SMTP relays from any external MTA (Google, Microsoft, Cloudflare, Discord, Valve/Steam, X/Twitter, etc.) without intermediate reputation blacklisting or false-positive spam dropping.
+- **Smart Heuristic & AI Parser (`SmartExtractor`)**: Processes MIME multipart bodies (plaintext, HTML, attachments) in memory to extract:
+  - Multi-digit OTPs (4–8 digit numeric or alphanumeric codes: `123456`, `449-012`, `G-891204`).
+  - Action / Activation Links (confirmation buttons, password reset URLs).
+  - High-signal clean plaintext summaries optimized for minimal LLM context token usage.
+- **Volatile Storage & TTL Purge**: Messages and inbox metadata are retained with a strict 60-minute Time-To-Live (TTL) in volatile memory/Redis. After expiration, records are irrecoverably deleted. No permanent disk logging of message bodies is maintained.
+- **Real-time Event Bus (SSE)**: Pushes incoming mail events to web clients and listening agents over HTTP Server-Sent Events with sub-50ms latency.
+
+---
+
+## 2. Model Context Protocol (MCP) Integration
+
+gecici.email provides an official MCP server adhering to the Anthropic Model Context Protocol specification.
+
+### Installation & Configuration
+For Claude Desktop or Cursor, add the following to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "gecici-email": {
+      "command": "npx",
+      "args": ["-y", "gecici-email-mcp"],
+      "env": {
+        "GECICI_API_URL": "https://gecici.email/api/v1"
+      }
+    }
+  }
+}
+```
+
+### Supported Tools Schema
+
+#### `gecici_create_inbox`
+Generates a new disposable inbox.
+- **Parameters**:
+  - `prefix` (string, optional): Desired prefix before `@gecici.email` (e.g. `agent_alpha`). If omitted, an alphanumeric random prefix is assigned.
+  - `domain` (string, optional): Target domain, default `"gecici.email"`.
+- **Returns**: JSON object containing `address`, `token`, `expiresAt`, `ttlSeconds`.
+
+#### `gecici_wait_for_otp`
+Blocks execution until an email arrives at the specified inbox and returns the extracted OTP code.
+- **Parameters**:
+  - `address` (string, required): Full email address to monitor (e.g. `agent_alpha@gecici.email`).
+  - `timeout_seconds` (number, optional): Maximum duration to wait (default 30, maximum 60).
+- **Returns**: JSON object with `otp`, `otpContext`, `actionType`, `sender`, `subject`.
+
+#### `gecici_wait_for_magic_link`
+Blocks execution until an email arrives and isolates the main action/activation URL.
+- **Parameters**:
+  - `address` (string, required): The target disposable address.
+  - `timeout_seconds` (number, optional): Timeout in seconds.
+- **Returns**: JSON object with `verificationLink`, `actionText`, `actionType`.
+
+#### `gecici_get_inbox_messages`
+Lists all received emails in the given inbox.
+- **Parameters**:
+  - `address` (string, required): The target disposable address.
+- **Returns**: Array of message objects with full sender metadata, headers, bodies, and smart summaries.
+
+#### `gecici_get_ai_summary`
+Returns a compressed, high-signal text summary of the latest email formatted for LLM prompts.
+
+---
+
+## 3. Full REST API Specification
+
+Base URL: `https://gecici.email/api/v1`
+Protocol: HTTPS
+Encoding: UTF-8 / JSON
+
+### 3.1 Health Check
+- **Endpoint**: `GET /health`
+- **Description**: Verifies service status and returns gateway metadata.
+- **Response**:
+  ```json
+  {
+    "status": "ok",
+    "timestamp": "2026-09-24T00:50:00.000Z",
+    "domain": "gecici.email",
+    "allowedDomains": ["gecici.email", "*"]
+  }
+  ```
+
+### 3.2 Generate Randomized Inbox
+- **Endpoint**: `POST /inbox/generate`
+- **Headers**: `Content-Type: application/json`
+- **Request Body**:
+  ```json
+  {
+    "domain": "gecici.email"
+  }
+  ```
+- **Response (201 Created)**:
+  ```json
+  {
+    "success": true,
+    "inbox": {
+      "address": "swift_9812@gecici.email",
+      "token": "7a8b9c0d1e2f3a4b",
+      "createdAt": 1790199000000,
+      "expiresAt": 1790202600000,
+      "ttlSeconds": 3600
+    }
+  }
+  ```
+
+### 3.3 Create Custom Named Inbox
+- **Endpoint**: `POST /inbox/custom`
+- **Headers**: `Content-Type: application/json`
+- **Request Body**:
+  ```json
+  {
+    "prefix": "test_bot_01",
+    "domain": "gecici.email"
+  }
+  ```
+- **Constraints**: Prefix must be 2–40 alphanumeric characters, periods, underscores, or hyphens (`a-z0-9._-`).
+- **Response (201 Created)**: Same schema as `/inbox/generate`.
+
+### 3.4 Retrieve Extracted OTP (`/inbox/:address/otp`)
+- **Endpoint**: `GET /inbox/:address/otp`
+- **Query Parameters**:
+  - `timeout` (integer, optional): Long-poll duration in milliseconds (default: 30000).
+- **Curl Example**:
+  ```bash
+  curl -s "https://gecici.email/api/v1/inbox/test_bot_01@gecici.email/otp?timeout=30000"
+  ```
+- **Success Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "otp": "893120",
+    "otpContext": "Doğrulama kodunuz: 893120",
+    "actionType": "verification",
+    "sender": {
+      "name": "Discord Security",
+      "address": "noreply@discord.com"
+    },
+    "subject": "Discord Doğrulama Kodu: 893120",
+    "receivedAt": 1790199842177
+  }
+  ```
+- **Timeout Response (408 Request Timeout)**:
+  ```json
+  {
+    "success": false,
+    "timeout": true,
+    "error": "Henüz e-posta bulunamadı"
+  }
+  ```
+
+### 3.5 Retrieve Verification / Magic Link (`/inbox/:address/links`)
+- **Endpoint**: `GET /inbox/:address/links`
+- **Success Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "verificationLink": "https://x.com/account/verify?token=ab89xyz7766",
+    "actionText": "Hesabımı Doğrula",
+    "actionType": "verification",
+    "sender": {
+      "name": "verify",
+      "address": "verify@x.com"
+    },
+    "subject": "Twitter / X Hesap Doğrulama Bağlantısı",
+    "receivedAt": 1790199883595
+  }
+  ```
+
+### 3.6 List Inbox Messages (`/inbox/:address/messages`)
+- **Endpoint**: `GET /inbox/:address/messages`
+- **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "address": "test_bot_01@gecici.email",
+    "count": 1,
+    "messages": [
+      {
+        "id": "246e1d9ca2757060",
+        "messageId": "<msg-246e1d9ca2757060@mail.gecici.email>",
+        "from": {
+          "name": "Steam Support",
+          "address": "support@steampowered.com"
+        },
+        "subject": "Steam Guard Kodu: 44912",
+        "date": "2026-09-24T00:44:02+03:00",
+        "text": "Steam hesabınıza giriş yapmak için kodunuz: 44912",
+        "html": "<p>Steam hesabınıza giriş yapmak için kodunuz: <b>44912</b></p>",
+        "smartSummary": {
+          "otpCode": "44912",
+          "otpContext": "kodunuz: 44912",
+          "verificationLink": null,
+          "actionText": "Doğrula / Onayla",
+          "actionType": "verification",
+          "cleanSummary": "[E-posta Konusu]: Steam Guard Kodu: 44912\n[YAKALANAN OTP / DOĞRULAMA KODU]: 44912",
+          "senderDomain": "steampowered.com",
+          "isAutomated": true
+        },
+        "read": false,
+        "receivedAt": 1790199842177
+      }
+    ]
+  }
+  ```
+
+### 3.7 Server-Sent Events Stream (`/inbox/:address/stream`)
+- **Endpoint**: `GET /inbox/:address/stream`
+- **Headers**:
+  - `Accept: text/event-stream`
+- **Stream Events**:
+  - `connected`: Emitted upon opening connection with inbox expiration timestamp.
+  - `new_email`: Emitted instantly whenever a message arrives.
+  - `heartbeat`: Keep-alive ping sent every few seconds.
+- **Example Event**:
+  ```text
+  event: new_email
+  data: {"type":"new_email","email":{...},"timestamp":1790199842177}
+  ```
+
+### 3.8 Delete Inbox (`DELETE /inbox/:address`)
+- **Endpoint**: `DELETE /inbox/:address`
+- **Response (200 OK)**:
+  ```json
+  {
+    "success": true,
+    "message": "Gelen kutusu ve tüm e-postalar silindi"
+  }
+  ```
+
+---
+
+## 4. Complete Code Examples
+
+### Python: Autonomous Signup with OTP Verification
+```python
+import time
+import requests
+from gecici import GeciciEmail
+
+client = GeciciEmail()
+
+def automate_signup():
+    with client.create_inbox() as inbox:
+        print(f"[*] Generated temporary address: {inbox.address}")
+
+        # Simulate registration request to third-party service
+        signup_payload = {
+            "email": inbox.address,
+            "username": "autobot_2026"
+        }
+        print(f"[*] Submitting registration for {inbox.address}...")
+
+        # Wait for the verification code (blocking up to 30s)
+        print("[*] Waiting for OTP code...")
+        otp = inbox.wait_for_otp(timeout=30)
+        
+        if not otp:
+            raise TimeoutError("OTP email did not arrive within 30 seconds.")
+
+        print(f"[+] Successfully extracted OTP: {otp}")
+        # Proceed with OTP submission...
+        return True
+
+if __name__ == "__main__":
+    automate_signup()
+```
+
+### Node.js / TypeScript: Real-Time SSE Listener
+```typescript
+import { GeciciEmail } from 'gecici-email';
+
+const client = new GeciciEmail();
+
+async function listenToInbox() {
+  const inbox = await client.createInbox();
+  console.log(`Listening on: ${inbox.address}`);
+
+  // Poll for magic link
+  const link = await client.waitForMagicLink(inbox.address, 45);
+  if (link) {
+    console.log(`Extracted activation link: ${link}`);
+  } else {
+    console.log('Timeout waiting for activation link.');
+  }
+
+  await client.deleteInbox(inbox.address);
+}
+
+listenToInbox();
+```
+
+---
+
+## 5. Error Codes & Diagnostics
+
+| HTTP Status | Meaning | Typical Cause | Resolution |
+| :--- | :--- | :--- | :--- |
+| `200 OK` | Success | Normal operation | Process payload |
+| `201 Created` | Inbox/Resource created | New address created | Save token/address |
+| `400 Bad Request` | Invalid parameters | Custom prefix < 2 chars or invalid symbols | Use `[a-z0-9._-]` |
+| `404 Not Found` | Inbox not found | Address expired or deleted | Re-create inbox |
+| `408 Request Timeout` | Polling timeout | Email did not arrive within timeout window | Retry or extend timeout |
+| `500 Server Error` | Internal error | Upstream service glitch | Retry with backoff |
+
+---
+
+## 6. Contact & Support
+- Website: [https://gecici.email](https://gecici.email)
+- Documentation: [https://gecici.email/api-dokuman](https://gecici.email/api-dokuman)
+- AI Agent Hub: [https://gecici.email/ai-ajanlar](https://gecici.email/ai-ajanlar)
+- Support / Inquiries: [support@gecici.email](mailto:support@gecici.email)

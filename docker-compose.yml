@@ -1,0 +1,60 @@
+services:
+  # 1. Backend Core & Inbound SMTP Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: gecici-server
+    restart: unless-stopped
+    ports:
+      - "25:25"       # Production Inbound SMTP (RFC 5322)
+      - "2525:2525"   # Alternative/Dev SMTP Port
+      - "4000:4000"   # REST & SSE API Port
+    environment:
+      - PORT=4000
+      - SMTP_PORT=25
+      - DOMAIN=gecici.email
+      - ALLOWED_DOMAINS=gecici.email,temp.gecici.email,localhost,127.0.0.1,*
+      - INBOX_TTL_MINUTES=60
+      - MAX_MESSAGES_PER_INBOX=100
+      - REDIS_URL=redis://redis:6379
+      - WEBHOOK_URL=https://gecici.email/api/v1/simulate
+    depends_on:
+      - redis
+    networks:
+      - gecici-net
+
+  # 2. Google-Optimized Next.js Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: gecici-web
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      - NODE_ENV=production
+      - INTERNAL_API_URL=http://server:4000
+    depends_on:
+      - server
+    networks:
+      - gecici-net
+
+  # 3. Redis In-Memory Cache (TTL Expiration)
+  redis:
+    image: redis:7-alpine
+    container_name: gecici-redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - gecici-net
+
+networks:
+  gecici-net:
+    driver: bridge
+
+volumes:
+  redis_data:

@@ -1,0 +1,37 @@
+{
+  "name": "gecici-email",
+  "version": "1.0.0",
+  "description": "Official TypeScript & JavaScript client for gecici.email - Fast disposable temporary email with smart OTP and verification link extraction for Humans & AI Agents.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "gecici-email",
+    "temp-mail",
+    "disposable-email",
+    "ai-agents",
+    "otp",
+    "otp-extractor",
+    "testing",
+    "automation",
+    "email-testing"
+  ],
+  "author": "gecici.email <support@gecici.email>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gecici-email/gecici-email-js"
+  },
+  "homepage": "https://gecici.email",
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "typescript": "^5.7.3"
+  }
+}

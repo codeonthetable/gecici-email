@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gecici.email</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="console-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <span class="logo-mark">@</span>
+        <div>
+          <div class="brand-title">gecici.email <span class="badge">EXT-v1</span></div>
+          <div class="brand-subtitle">DİJİTAL SİNYAL & GEÇİCİ POSTA</div>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="led-dot"></span>
+        <span class="status-text">CANLI</span>
+      </div>
+    </header>
+
+    <!-- LCD Display -->
+    <div class="lcd-panel">
+      <div class="lcd-header">
+        <span>[01] GEÇİCİ KANAL</span>
+        <span id="ttlText">60:00</span>
+      </div>
+      <div class="lcd-address" id="addressDisplay">YÜKLENİYOR...</div>
+    </div>
+
+    <!-- Hardware Action Buttons -->
+    <div class="action-grid">
+      <button class="btn btn-accent" id="btnCopy">
+        <span id="btnCopyText">⧉ KOPYALA</span>
+      </button>
+      <button class="btn" id="btnRefresh" title="Yeni Rastgele Adres">
+        ↻ YENİLE
+      </button>
+      <button class="btn" id="btnCustom" title="Özel İsim Belirle">
+        + ÖZEL
+      </button>
+      <button class="btn" id="btnWeb" title="Web Konsolunu Aç">
+        ↗ WEB
+      </button>
+    </div>
+
+    <!-- Custom Prefix Input Box (Hidden by default) -->
+    <div class="custom-box" id="customBox" style="display: none;">
+      <input type="text" id="customInput" placeholder="kanal_adi" maxlength="30">
+      <button class="btn btn-sm btn-accent" id="btnCustomSave">KAYDET</button>
+      <button class="btn btn-sm" id="btnCustomCancel">✕</button>
+    </div>
+
+    <!-- Messages Container -->
+    <section class="messages-section">
+      <div class="section-header">
+        <span>GELEN İLETİLER</span>
+        <span class="count-tag" id="msgCount">0</span>
+      </div>
+
+      <div class="messages-list" id="messagesList">
+        <div class="empty-state">
+          <div class="empty-icon">✉</div>
+          <div class="empty-title">SİNYAL BEKLENİYOR</div>
+          <div class="empty-sub">Gelen postalar burada görünecektir.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>0-LOG // RAM CACHE</span>
+      <a href="https://gecici.email" target="_blank" class="footer-link">gecici.email ↗</a>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

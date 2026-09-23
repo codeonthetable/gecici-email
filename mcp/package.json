@@ -1,0 +1,49 @@
+{
+  "name": "gecici-email-mcp",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol (MCP) Server for gecici.email - Instant disposable emails, smart OTP extraction and verification links for AI Agents (Claude Desktop, Cursor, Windsurf).",
+  "main": "dist/index.js",
+  "bin": {
+    "gecici-email-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "smithery.yaml"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude",
+    "claude-desktop",
+    "cursor",
+    "windsurf",
+    "ai-agents",
+    "disposable-email",
+    "temp-mail",
+    "otp",
+    "otp-extractor",
+    "testing"
+  ],
+  "author": "gecici.email <support@gecici.email>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gecici-email/gecici-email-mcp"
+  },
+  "homepage": "https://gecici.email",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "typescript": "^5.7.3"
+  }
+}
