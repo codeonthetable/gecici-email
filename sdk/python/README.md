@@ -83,20 +83,52 @@ print(summary)
 
 ---
 
-## 🤖 LangChain Integration
+## 🌐 Browser-Use Integration (Web Browsing Agents)
 
-`gecici-email` comes with built-in LangChain tools:
+Autonomous agents browsing the web with [browser-use](https://github.com/browser-use/browser-use) can directly create inboxes and verify signups:
 
 ```python
-from langchain.agents import initialize_agent, AgentType
+import asyncio
+from browser_use import Agent
 from langchain_openai import ChatOpenAI
-from gecici.integrations.langchain import GeciciCreateInboxTool, GeciciWaitForOtpTool
+from gecici.integrations.browser_use import get_browser_use_tools
+
+async def main():
+    # Automatically registers: create_disposable_email, wait_for_otp_code, wait_for_activation_link
+    tools = get_browser_use_tools()
+
+    agent = Agent(
+        task="Go to https://example.com/signup, create a temporary email using gecici.email, sign up, wait for the verification code, and enter it.",
+        llm=ChatOpenAI(model="gpt-4o"),
+        tools=tools,
+    )
+    await agent.run()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+---
+
+## 🤖 LangChain Integration
+
+`gecici-email` includes single tools or a complete `GeciciEmailToolkit`:
+
+```python
+from langchain.agents import create_openai_tools_agent, AgentExecutor
+from langchain_openai import ChatOpenAI
+from langchain import hub
+from gecici.integrations.langchain import GeciciEmailToolkit
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0)
-tools = [GeciciCreateInboxTool(), GeciciWaitForOtpTool()]
+toolkit = GeciciEmailToolkit()
+tools = toolkit.get_tools()
 
-agent = initialize_agent(tools, llm, agent=AgentType.STRUCTURED_CHAT_ZERO_SHOT_REACT_DESCRIPTION)
-agent.run("Create a temporary email inbox and wait for the verification code sent to it.")
+prompt = hub.pull("hwchase17/openai-tools-agent")
+agent = create_openai_tools_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+
+agent_executor.invoke({"input": "Create a temporary email inbox and wait for the verification code sent to it."})
 ```
 
 ---

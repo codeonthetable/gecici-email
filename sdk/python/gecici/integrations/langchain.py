@@ -56,6 +56,17 @@ try:
         async def _arun(self, address: str, timeout_seconds: int = 30) -> str:
             return self._run(address=address, timeout_seconds=timeout_seconds)
 
+    class GeciciEmailToolkit(BaseModel):
+        """Toolkit for interacting with disposable temporary emails via gecici.email."""
+
+        def get_tools(self) -> list:
+            """Return all available gecici-email tools for LangChain agents."""
+            return [
+                GeciciCreateInboxTool(),
+                GeciciWaitForOtpTool(),
+                GeciciWaitForMagicLinkTool(),
+            ]
+
 except ImportError:
     # If langchain or pydantic is not installed, provide stub with helpful message
     class GeciciCreateInboxTool:  # type: ignore
@@ -69,3 +80,7 @@ except ImportError:
     class GeciciWaitForMagicLinkTool:  # type: ignore
         def __init__(self):
             raise ImportError("LangChain is required to use GeciciWaitForMagicLinkTool. Install it with: pip install langchain")
+
+    class GeciciEmailToolkit:  # type: ignore
+        def __init__(self):
+            raise ImportError("LangChain is required to use GeciciEmailToolkit. Install it with: pip install langchain")

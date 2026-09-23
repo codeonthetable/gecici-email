@@ -1,8 +1,21 @@
 # Smithery configuration file
-# See: https://smithery.ai/docs/config#smitheryyaml
+# Specification: https://smithery.ai/docs/config#smitheryyaml
 startCommand:
   type: stdio
-  config:
-    command: node
-    args:
-      - dist/index.js
+  configSchema:
+    type: object
+    properties:
+      apiUrl:
+        type: string
+        default: "https://gecici.email/api/v1"
+        description: "Base API URL for gecici.email disposable inbox service"
+  commandFunction: |-
+    (config) => ({
+      command: 'node',
+      args: ['dist/index.js'],
+      env: {
+        GECICI_API_URL: config?.apiUrl || 'https://gecici.email/api/v1'
+      }
+    })
+  exampleConfig:
+    apiUrl: "https://gecici.email/api/v1"

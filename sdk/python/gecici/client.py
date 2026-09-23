@@ -102,6 +102,15 @@ class GeciciEmail:
         resp.raise_for_status()
         return resp.json()
 
+    def get_inbox(self, address: str, token: str = "") -> GeciciInbox:
+        """Mevcut bir adrese ait GeciciInbox nesnesi oluşturur."""
+        return GeciciInbox(
+            address=address,
+            token=token,
+            expires_at=int(time.time()) + 3600,
+            client=self
+        )
+
     def delete_inbox(self, address: str) -> bool:
         resp = requests.delete(f"{self.base_url}/inbox/{address}", timeout=self.default_timeout)
         return resp.status_code == 200

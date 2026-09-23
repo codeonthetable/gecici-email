@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gecici-email"
-version = "1.0.0"
-description = "Autonomous AI Agent-native disposable email client with smart OTP and magic link extraction."
+version = "1.1.0"
+description = "Autonomous AI Agent-native disposable email client with smart OTP and magic link extraction for browser-use, LangChain, CrewAI."
 readme = "README.md"
 authors = [{ name = "gecici.email", email = "support@gecici.email" }]
 license = { text = "MIT" }
@@ -13,13 +13,27 @@ requires-python = ">=3.8"
 dependencies = [
     "requests>=2.28.0"
 ]
-keywords = ["disposable-email", "temp-mail", "ai-agents", "mcp", "otp-extractor", "langchain", "crewai"]
+keywords = [
+    "disposable-email",
+    "temp-mail",
+    "ai-agents",
+    "mcp",
+    "otp-extractor",
+    "browser-use",
+    "langchain",
+    "crewai",
+    "automation",
+    "testing"
+]
 
 [project.optional-dependencies]
 langchain = ["langchain>=0.1.0", "pydantic>=2.0.0"]
 crewai = ["crewai>=0.1.0", "pydantic>=2.0.0"]
+browser-use = ["browser-use>=0.1.0"]
+all = ["langchain>=0.1.0", "crewai>=0.1.0", "browser-use>=0.1.0", "pydantic>=2.0.0"]
 
 [project.urls]
 Homepage = "https://gecici.email"
 Documentation = "https://gecici.email/api-dokuman"
 "LLM Spec" = "https://gecici.email/llms.txt"
+"Source Code" = "https://github.com/codeonthetable/gecici-email"
