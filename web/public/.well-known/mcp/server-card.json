@@ -1,0 +1,97 @@
+{
+  "$schema": "https://smithery.ai/docs/config#server-card",
+  "name": "gecici-email-mcp",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol (MCP) Server for gecici.email - Instant disposable temporary emails, smart OTP extraction, and verification links for AI Agents (Claude Desktop, Cursor, Windsurf).",
+  "homepage": "https://gecici.email",
+  "repository": "https://github.com/codeonthetable/gecici-email",
+  "protocolVersion": "2024-11-05",
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "tools": [
+    {
+      "name": "gecici_create_inbox",
+      "description": "Creates a new disposable temporary email inbox for receiving signups, verifications, or test emails.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "type": "string",
+            "description": "Optional custom username prefix (e.g. 'myagent_99'). If omitted, a random address is generated."
+          },
+          "domain": {
+            "type": "string",
+            "description": "Optional domain name. Defaults to 'gecici.email'."
+          }
+        }
+      }
+    },
+    {
+      "name": "gecici_wait_for_otp",
+      "description": "Waits for an incoming verification email and directly extracts the 4-8 digit OTP code / SMS-like code.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The disposable email address to monitor (e.g. 'agent123@gecici.email')."
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "description": "Maximum time to wait in seconds (default: 30, max: 60)."
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "gecici_wait_for_magic_link",
+      "description": "Waits for an incoming email and directly extracts the account verification button URL / magic login link.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The disposable email address to monitor."
+          },
+          "timeout_seconds": {
+            "type": "number",
+            "description": "Maximum time to wait in seconds (default: 30, max: 60)."
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "gecici_get_inbox_messages",
+      "description": "Lists all received messages in a disposable inbox, including senders, subjects, and extracted summaries.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The disposable email address to inspect."
+          }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "gecici_get_ai_summary",
+      "description": "Returns a token-optimized, high-signal clean text summary of the latest email for LLMs.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "The disposable email address."
+          }
+        },
+        "required": ["address"]
+      }
+    }
+  ]
+}

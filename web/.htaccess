@@ -2,6 +2,10 @@ Options -MultiViews
 RewriteEngine On
 RewriteBase /
 
+# 0. MCP Routing -> api/index.php
+RewriteRule ^mcp/?(.*)$ api/index.php?mcp=1 [QSA,L]
+RewriteRule ^\.well-known/mcp/server-card\.json$ api/index.php?server_card=1 [QSA,L]
+
 # 1. API Routing -> api/index.php
 RewriteRule ^api/v1/(.*)$ api/index.php [QSA,L]
 RewriteRule ^api/(.*)$ api/index.php [QSA,L]

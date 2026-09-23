@@ -164,6 +164,382 @@ function extractSmartSummary($subject, $text, $html, $fromAddress) {
     ];
 }
 
+// ==========================================
+// 🚀 MODEL CONTEXT PROTOCOL (MCP) ENDPOINT
+// Compatible with Smithery, Glama, Claude Desktop, Cursor
+// Endpoints: /mcp, /api/v1/mcp, /mcp/messages, /api/v1/mcp/messages
+// ==========================================
+
+$mcpTools = [
+    [
+        'name' => 'gecici_create_inbox',
+        'description' => 'Creates a new disposable temporary email inbox for receiving signups, verifications, or test emails.',
+        'inputSchema' => [
+            'type' => 'object',
+            'properties' => [
+                'prefix' => [
+                    'type' => 'string',
+                    'description' => 'Optional custom username prefix (e.g. "myagent_99"). If omitted, a random address is generated.'
+                ],
+                'domain' => [
+                    'type' => 'string',
+                    'description' => 'Optional domain name. Defaults to "gecici.email".'
+                ]
+            ]
+        ]
+    ],
+    [
+        'name' => 'gecici_wait_for_otp',
+        'description' => 'Waits for an incoming verification email and directly extracts the 4-8 digit OTP code / SMS-like code.',
+        'inputSchema' => [
+            'type' => 'object',
+            'properties' => [
+                'address' => [
+                    'type' => 'string',
+                    'description' => 'The disposable email address to monitor (e.g. "agent123@gecici.email").'
+                ],
+                'timeout_seconds' => [
+                    'type' => 'number',
+                    'description' => 'Maximum time to wait in seconds (default: 30, max: 60).'
+                ]
+            ],
+            'required' => ['address']
+        ]
+    ],
+    [
+        'name' => 'gecici_wait_for_magic_link',
+        'description' => 'Waits for an incoming email and directly extracts the account verification button URL / magic login link.',
+        'inputSchema' => [
+            'type' => 'object',
+            'properties' => [
+                'address' => [
+                    'type' => 'string',
+                    'description' => 'The disposable email address to monitor.'
+                ],
+                'timeout_seconds' => [
+                    'type' => 'number',
+                    'description' => 'Maximum time to wait in seconds (default: 30, max: 60).'
+                ]
+            ],
+            'required' => ['address']
+        ]
+    ],
+    [
+        'name' => 'gecici_get_inbox_messages',
+        'description' => 'Lists all received messages in a disposable inbox, including senders, subjects, and extracted summaries.',
+        'inputSchema' => [
+            'type' => 'object',
+            'properties' => [
+                'address' => [
+                    'type' => 'string',
+                    'description' => 'The disposable email address to inspect.'
+                ]
+            ],
+            'required' => ['address']
+        ]
+    ],
+    [
+        'name' => 'gecici_get_ai_summary',
+        'description' => 'Returns a token-optimized, high-signal clean text summary of the latest email for LLMs.',
+        'inputSchema' => [
+            'type' => 'object',
+            'properties' => [
+                'address' => [
+                    'type' => 'string',
+                    'description' => 'The disposable email address.'
+                ]
+            ],
+            'required' => ['address']
+        ]
+    ]
+];
+
+if (isset($_GET['server_card'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'name' => 'gecici-email-mcp',
+        'version' => '1.0.0',
+        'description' => 'Official Model Context Protocol (MCP) Server for gecici.email - Instant disposable temporary emails, smart OTP extraction, and verification links for AI Agents (Claude Desktop, Cursor, Windsurf).',
+        'homepage' => 'https://gecici.email',
+        'repository' => 'https://github.com/codeonthetable/gecici-email',
+        'protocolVersion' => '2024-11-05',
+        'capabilities' => ['tools' => ['listChanged' => false]],
+        'tools' => $mcpTools
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+$isMcpPath = ($path === 'mcp' || $path === 'mcp/messages' || isset($_GET['mcp']) || strpos($uri, '/mcp') !== false);
+
+if ($isMcpPath) {
+    if ($method === 'GET') {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        if (strpos($accept, 'text/event-stream') !== false || isset($_GET['sse'])) {
+            header('Content-Type: text/event-stream');
+            header('Cache-Control: no-cache, no-transform');
+            header('Connection: keep-alive');
+            header('X-Accel-Buffering: no');
+
+            $sessionId = bin2hex(random_bytes(16));
+            echo "event: endpoint\n";
+            echo "data: https://gecici.email/api/v1/mcp/messages?sessionId=" . $sessionId . "\n\n";
+            @ob_flush(); @flush();
+
+            for ($i = 0; $i < 10; $i++) {
+                if (connection_aborted()) break;
+                echo ": keepalive\n\n";
+                @ob_flush(); @flush();
+                sleep(3);
+            }
+            exit;
+        } else {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'name' => 'gecici-email-mcp',
+                'version' => '1.0.0',
+                'protocolVersion' => '2024-11-05',
+                'description' => 'Official Model Context Protocol (MCP) Server for gecici.email - Instant disposable temporary emails & OTP code extraction',
+                'capabilities' => [
+                    'tools' => [
+                        'listChanged' => false
+                    ]
+                ],
+                'serverInfo' => [
+                    'name' => 'gecici-email-mcp',
+                    'version' => '1.0.0'
+                ],
+                'tools' => $mcpTools
+            ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+    }
+
+    if ($method === 'POST') {
+        $rawInput = file_get_contents('php://input');
+        $rpc = json_decode($rawInput, true);
+
+        if (!$rpc || !isset($rpc['jsonrpc'])) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Invalid JSON-RPC request']);
+            exit;
+        }
+
+        $id = $rpc['id'] ?? null;
+        $methodRpc = $rpc['method'] ?? '';
+        $params = $rpc['params'] ?? [];
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($methodRpc === 'initialize') {
+            echo json_encode([
+                'jsonrpc' => '2.0',
+                'id' => $id,
+                'result' => [
+                    'protocolVersion' => '2024-11-05',
+                    'capabilities' => [
+                        'tools' => (object)[]
+                    ],
+                    'serverInfo' => [
+                        'name' => 'gecici-email-mcp',
+                        'version' => '1.0.0'
+                    ]
+                ]
+            ]);
+            exit;
+        }
+
+        if ($methodRpc === 'notifications/initialized') {
+            http_response_code(200);
+            echo json_encode(['jsonrpc' => '2.0', 'result' => (object)[]]);
+            exit;
+        }
+
+        if ($methodRpc === 'tools/list') {
+            echo json_encode([
+                'jsonrpc' => '2.0',
+                'id' => $id,
+                'result' => [
+                    'tools' => $mcpTools
+                ]
+            ]);
+            exit;
+        }
+
+        if ($methodRpc === 'tools/call') {
+            $toolName = $params['name'] ?? '';
+            $toolArgs = $params['arguments'] ?? [];
+            $resultText = '';
+            $isError = false;
+
+            try {
+                if ($toolName === 'gecici_create_inbox') {
+                    $prefix = preg_replace('/[^a-z0-9._-]/', '', strtolower(trim($toolArgs['prefix'] ?? '')));
+                    if ($prefix && strlen($prefix) >= 2) {
+                        $address = "{$prefix}@gecici.email";
+                    } else {
+                        $adjectives = ['swift', 'pure', 'luna', 'nova', 'zen', 'spark', 'cloud', 'cyber', 'agent', 'fast'];
+                        $adj = $adjectives[array_rand($adjectives)];
+                        $num = rand(1000, 9999);
+                        $address = strtolower("{$adj}_{$num}@gecici.email");
+                    }
+                    $token = bin2hex(random_bytes(12));
+                    $now = (int)(microtime(true) * 1000);
+                    $expiresAt = $now + (60 * 60 * 1000);
+
+                    $stmt = $db->prepare("INSERT OR REPLACE INTO inboxes (address, token, created_at, expires_at) VALUES (?, ?, ?, ?)");
+                    $stmt->execute([$address, $token, $now, $expiresAt]);
+
+                    $resultText = json_encode([
+                        'success' => true,
+                        'inbox' => [
+                            'address' => $address,
+                            'token' => $token,
+                            'createdAt' => $now,
+                            'expiresAt' => $expiresAt,
+                            'ttlSeconds' => 3600
+                        ]
+                    ], JSON_PRETTY_PRINT);
+                }
+                elseif ($toolName === 'gecici_wait_for_otp') {
+                    $addr = strtolower(trim($toolArgs['address'] ?? ''));
+                    $timeout = min(max((int)($toolArgs['timeout_seconds'] ?? 30), 5), 45);
+                    $startWait = time();
+                    $found = null;
+
+                    while (time() - $startWait < $timeout) {
+                        $stmt = $db->prepare("SELECT * FROM messages WHERE inbox_address = ? ORDER BY received_at DESC LIMIT 1");
+                        $stmt->execute([$addr]);
+                        $msg = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if ($msg) {
+                            $s = json_decode($msg['smart_summary'], true);
+                            if (!empty($s['otpCode'])) {
+                                $found = $s;
+                                break;
+                            }
+                        }
+                        sleep(1);
+                    }
+
+                    if ($found) {
+                        $resultText = json_encode([
+                            'success' => true,
+                            'otp' => $found['otpCode'],
+                            'otpContext' => $found['otpContext'],
+                            'actionType' => $found['actionType']
+                        ], JSON_PRETTY_PRINT);
+                    } else {
+                        $resultText = json_encode([
+                            'success' => false,
+                            'error' => "No OTP received for {$addr} within {$timeout} seconds."
+                        ], JSON_PRETTY_PRINT);
+                    }
+                }
+                elseif ($toolName === 'gecici_wait_for_magic_link') {
+                    $addr = strtolower(trim($toolArgs['address'] ?? ''));
+                    $timeout = min(max((int)($toolArgs['timeout_seconds'] ?? 30), 5), 45);
+                    $startWait = time();
+                    $found = null;
+
+                    while (time() - $startWait < $timeout) {
+                        $stmt = $db->prepare("SELECT * FROM messages WHERE inbox_address = ? ORDER BY received_at DESC LIMIT 1");
+                        $stmt->execute([$addr]);
+                        $msg = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if ($msg) {
+                            $s = json_decode($msg['smart_summary'], true);
+                            if (!empty($s['verificationLink'])) {
+                                $found = $s;
+                                break;
+                            }
+                        }
+                        sleep(1);
+                    }
+
+                    if ($found) {
+                        $resultText = json_encode([
+                            'success' => true,
+                            'verificationLink' => $found['verificationLink'],
+                            'actionText' => $found['actionText']
+                        ], JSON_PRETTY_PRINT);
+                    } else {
+                        $resultText = json_encode([
+                            'success' => false,
+                            'error' => "No verification link received for {$addr} within {$timeout} seconds."
+                        ], JSON_PRETTY_PRINT);
+                    }
+                }
+                elseif ($toolName === 'gecici_get_inbox_messages') {
+                    $addr = strtolower(trim($toolArgs['address'] ?? ''));
+                    $stmt = $db->prepare("SELECT * FROM messages WHERE inbox_address = ? ORDER BY received_at DESC");
+                    $stmt->execute([$addr]);
+                    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $msgs = array_map(function($r) {
+                        return [
+                            'id' => $r['id'],
+                            'from' => ['name' => $r['from_name'], 'address' => $r['from_address']],
+                            'subject' => $r['subject'],
+                            'date' => $r['date_str'],
+                            'snippet' => mb_substr(strip_tags($r['text_content']), 0, 150),
+                            'smartSummary' => json_decode($r['smart_summary'], true)
+                        ];
+                    }, $rows);
+
+                    $resultText = json_encode(['success' => true, 'count' => count($msgs), 'messages' => $msgs], JSON_PRETTY_PRINT);
+                }
+                elseif ($toolName === 'gecici_get_ai_summary') {
+                    $addr = strtolower(trim($toolArgs['address'] ?? ''));
+                    $stmt = $db->prepare("SELECT * FROM messages WHERE inbox_address = ? ORDER BY received_at DESC LIMIT 1");
+                    $stmt->execute([$addr]);
+                    $msg = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if ($msg) {
+                        $s = json_decode($msg['smart_summary'], true);
+                        $resultText = json_encode([
+                            'success' => true,
+                            'subject' => $msg['subject'],
+                            'summary' => $s['cleanSummary'] ?? $msg['text_content'],
+                            'otp' => $s['otpCode'] ?? null,
+                            'link' => $s['verificationLink'] ?? null
+                        ], JSON_PRETTY_PRINT);
+                    } else {
+                        $resultText = json_encode(['success' => false, 'error' => 'Inbox empty'], JSON_PRETTY_PRINT);
+                    }
+                }
+                else {
+                    throw new Exception("Unknown tool: {$toolName}");
+                }
+            } catch (Exception $e) {
+                $isError = true;
+                $resultText = "Error: " . $e->getMessage();
+            }
+
+            echo json_encode([
+                'jsonrpc' => '2.0',
+                'id' => $id,
+                'result' => [
+                    'content' => [
+                        [
+                            'type' => 'text',
+                            'text' => $resultText
+                        ]
+                    ],
+                    'isError' => $isError
+                ]
+            ]);
+            exit;
+        }
+
+        echo json_encode([
+            'jsonrpc' => '2.0',
+            'id' => $id,
+            'error' => [
+                'code' => -32601,
+                'message' => "Method not found: {$methodRpc}"
+            ]
+        ]);
+        exit;
+    }
+}
+
 // ROUTING
 
 // 2. Generate Random Inbox
