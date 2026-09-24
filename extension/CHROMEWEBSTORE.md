@@ -1,6 +1,6 @@
 # Chrome Web Store Submission Guide — gecici.email
 
-> **Single Source of Truth** for the Chrome Web Store Developer Dashboard listing, permissions justifications, and privacy disclosures.
+> **Single Source of Truth** for the Chrome Web Store Developer Dashboard listing, permissions justifications, store assets, and privacy disclosures.
 
 ---
 
@@ -55,22 +55,46 @@ Açık Kaynak Kod: https://github.com/codeonthetable/gecici-email
 
 ---
 
-## 3. Privacy & Data Use Disclosure
+## 3. Visual Assets (Ready in `extension/store-assets/`)
+
+| Asset | File | Dimensions | Purpose |
+| :--- | :--- | :--- | :--- |
+| Store Icon | `extension/icons/icon-128.png` | 128×128 | Official store listing icon |
+| Screenshot 1 | `extension/store-assets/screenshot-1-console.png` | 1280×800 | Retro Hardware Console UI, 60m TTL, Live Badge |
+| Screenshot 2 | `extension/store-assets/screenshot-2-autofill.png` | 1280×800 | Right-click Context Menu Autofill on signup form |
+| Screenshot 3 | `extension/store-assets/screenshot-3-otp.png` | 1280×800 | Smart OTP extraction & Desktop Notification |
+| Small Promo Tile | `extension/store-assets/promo-tile-440x280.png` | 440×280 | Featured placement card in Web Store search results |
+
+---
+
+## 4. Privacy & Data Use Disclosure
 
 - **Does this extension collect user data?** No. Zero analytics, zero trackers.
 - **Does it sell personal data to third parties?** No.
 - **Does it transfer data for reasons unrelated to core functionality?** No.
 - **Does it use data for creditworthiness or lending?** No.
 - **Single Purpose Declaration**: The single purpose of gecici.email is to generate ephemeral disposable email addresses, autofill signup forms on user request, and display incoming OTP verification codes to protect user privacy.
+- **Privacy Policy URL**: `https://gecici.email/gizlilik-ve-guvenlik`
 
 ---
 
-## 4. Packaging for Chrome Web Store & Distribution
+## 5. Step-by-Step Publishing to Chrome Web Store
 
-To create the production zip archive with `manifest.json` at the root of the archive:
-
-```bash
-cd "/Users/bahadirdavdav/Desktop/Gemini Proje/gecici-email/extension"
-zip -r ../gecici-email-extension.zip . -x "*.DS_Store" "CHROMEWEBSTORE.md"
-cp ../gecici-email-extension.zip ../web/public/gecici-email-extension.zip
-```
+1. **Geliştirici Paneline Giriş Yapın:**  
+   Tarayıcınızda [chrome.google.com/webstore/devconsole](https://chrome.google.com/webstore/devconsole) adresine gidin.  
+   *(Google ilk kez geliştirici olan hesaplar için tek seferlik $5 USD kayıt ücreti almaktadır).*
+2. **Yeni Öğe Ekleyin:**  
+   Sağ üstteki **"Yeni öğe ekle" (New item)** butonuna tıklayın.
+3. **ZIP Paketini Yükleyin:**  
+   Proje dizinindeki hazır `gecici-email-extension.zip` dosyasını sürükleyip bırakın.
+4. **Mağaza Bilgilerini Doldurun:**  
+   - Başlık ve açıklamaları Bölüm 1'deki metinlerden kopyalayın.
+   - Kategori: **Üretkenlik (Productivity) / Geliştirici Araçları**.
+5. **Görselleri Yükleyin:**  
+   `extension/store-assets/` klasöründeki 3 adet ekran görüntüsünü (`screenshot-1-console.png`, `screenshot-2-autofill.png`, `screenshot-3-otp.png`) ve `promo-tile-440x280.png` dosyasını yükleyin.
+6. **Gizlilik Sekmesini (Privacy) Onaylayın:**  
+   - Gizlilik Politikası URL'si: `https://gecici.email/gizlilik-ve-guvenlik`
+   - Veri toplama sorularının hepsine **"HAYIR / NO"** seçin.
+   - İzin gerekçeleri (Bölüm 2'deki tablo) kutulara yapıştırın.
+7. **İncelemeye Gönderin (Submit for Review):**  
+   Google onay ekibi genelde 24-48 saat içinde inceler ve eklenti dünyadaki tüm Chrome kullanıcıları için yayına girer!

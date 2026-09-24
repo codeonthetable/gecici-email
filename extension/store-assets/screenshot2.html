@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Mono", monospace; }
+  body {
+    width: 1280px;
+    height: 800px;
+    background: radial-gradient(circle at 50% 30%, #151822 0%, #08090c 100%);
+    color: #e4e5e8;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px 60px 40px;
+  }
+  
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .header { text-align: center; z-index: 10; position: relative; }
+  .brand-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(0, 255, 102, 0.1);
+    border: 1px solid rgba(0, 255, 102, 0.4);
+    font-size: 13px;
+    font-weight: 700;
+    color: #00ff66;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .title { font-size: 38px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .title span { color: #00ff66; }
+  .subtitle { font-size: 16px; color: #8a92a6; max-width: 700px; line-height: 1.5; }
+
+  /* Browser Mock */
+  .browser-mock {
+    width: 960px;
+    height: 480px;
+    background: #0f1117;
+    border: 2px solid #232734;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 255, 102, 0.08);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+  }
+  .browser-top {
+    height: 42px;
+    background: #171922;
+    border-bottom: 1px solid #232734;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+  }
+  .traffic-lights { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .url-bar {
+    flex: 1;
+    height: 26px;
+    background: #0a0b0e;
+    border-radius: 6px;
+    border: 1px solid #282c3a;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: #727a8e;
+    font-family: monospace;
+  }
+  .url-bar span { color: #00ff66; margin-right: 6px; }
+
+  .browser-content {
+    flex: 1;
+    position: relative;
+    background: #0b0d12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Registration Form Mock */
+  .form-card {
+    width: 380px;
+    background: #141720;
+    border: 1px solid #262c3e;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .form-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-label { font-size: 11px; color: #8a92a6; font-weight: 600; }
+  .input-box {
+    background: #0a0b0f;
+    border: 1px solid #2d3345;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #ffffff;
+    font-family: monospace;
+  }
+  .input-box.active {
+    border-color: #00ff66;
+    box-shadow: 0 0 0 2px rgba(0, 255, 102, 0.2);
+    color: #00ff66;
+  }
+  .btn-submit {
+    background: #232736;
+    border: 1px solid #373f55;
+    color: #8a92a6;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  /* Right-Click Context Menu Overlay */
+  .context-menu {
+    position: absolute;
+    top: 140px;
+    left: 450px;
+    width: 280px;
+    background: #1c202a;
+    border: 1px solid #3b445c;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 20;
+  }
+  .menu-item {
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #b0b8cb;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .menu-item.highlight {
+    background: #ff4e00;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(255, 78, 0, 0.4);
+  }
+  .menu-divider { height: 1px; background: #2b3244; margin: 4px 2px; }
+
+  /* Notification Badge Floating */
+  .toast-badge {
+    position: absolute;
+    bottom: 24px;
+    right: 30px;
+    background: #090a0d;
+    border: 1px solid #00ff66;
+    border-radius: 10px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 10px 30px rgba(0, 255, 102, 0.2);
+    z-index: 25;
+  }
+  .toast-icon { width: 24px; height: 24px; background: #00ff66; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: black; font-weight: 900; }
+  .toast-title { font-size: 11px; font-weight: 700; color: #fff; }
+  .toast-sub { font-size: 10px; color: #00ff66; font-family: monospace; }
+
+  /* Footer Badges */
+  .footer-features { display: flex; gap: 20px; z-index: 10; }
+  .feat-pill {
+    background: #121419;
+    border: 1px solid #242733;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8a92a6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+  }
+  .feat-pill span { color: #00ff66; }
+</style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="header">
+    <div class="brand-tag">⚡ 1 SANİYEDE KAYIT</div>
+    <h1 class="title">Sağ Tık ile <span>Otomatik Doldurma</span></h1>
+    <p class="subtitle">Herhangi bir kayıt formundaki e-posta kutucuğuna sağ tıklayın, tek tıkla adres üretip yapıştırın. Sekme değiştirmeye son.</p>
+  </div>
+
+  <div class="browser-mock">
+    <div class="browser-top">
+      <div class="traffic-lights">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="url-bar">
+        <span>🔒 https://</span>community.example.org/register
+      </div>
+    </div>
+    <div class="browser-content">
+      <!-- Mock Registration Form -->
+      <div class="form-card">
+        <div class="form-title">Yeni Hesap Oluştur</div>
+        <div class="input-group">
+          <div class="input-label">Kullanıcı Adı</div>
+          <div class="input-box">developer_99</div>
+        </div>
+        <div class="input-group">
+          <div class="input-label">E-posta Adresi</div>
+          <div class="input-box active">zen_4892@gecici.email</div>
+        </div>
+        <div class="btn-submit">Kayıt Ol</div>
+      </div>
+
+      <!-- Right Click Context Menu -->
+      <div class="context-menu">
+        <div class="menu-item highlight">
+          <span>✉️</span>
+          <span>gecici.email: Adres Üret & Yapıştır</span>
+        </div>
+        <div class="menu-divider"></div>
+        <div class="menu-item">Geri Al</div>
+        <div class="menu-item">Kes</div>
+        <div class="menu-item">Kopyala</div>
+        <div class="menu-item">Yapıştır</div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div class="toast-badge">
+        <div class="toast-icon">✓</div>
+        <div>
+          <div class="toast-title">gecici.email — Adres Yapıştırıldı!</div>
+          <div class="toast-sub">zen_4892@gecici.email panoya kopyalandı</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-features">
+    <div class="feat-pill"><span>■</span> CONTEXT MENU ENTEGRASYONU</div>
+    <div class="feat-pill"><span>■</span> REACT & VUE EVENT DESTEĞİ</div>
+    <div class="feat-pill"><span>■</span> OTOMATİK PANOYA KOPYALAMA</div>
+    <div class="feat-pill"><span>■</span> SIFIR VERİ TOPLAMA</div>
+  </div>
+</body>
+</html>

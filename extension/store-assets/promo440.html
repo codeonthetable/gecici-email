@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Mono", monospace; }
+  body {
+    width: 440px;
+    height: 280px;
+    background: radial-gradient(circle at 50% 20%, #1c202d 0%, #090a0e 100%);
+    color: #e4e5e8;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 20px 20px;
+    border: 1px solid #2e3547;
+  }
+
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+
+  .logo-box {
+    width: 52px;
+    height: 52px;
+    background: #ff4e00;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 28px;
+    box-shadow: 0 0 24px rgba(255, 78, 0, 0.6);
+    z-index: 5;
+  }
+
+  .brand-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    z-index: 5;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .brand-title span { color: #ff9900; font-size: 11px; background: #1c202c; padding: 2px 6px; border-radius: 4px; border: 1px solid #2e3547; }
+
+  .tagline {
+    font-size: 11px;
+    font-family: monospace;
+    color: #8a92a6;
+    letter-spacing: 0.5px;
+    text-align: center;
+    z-index: 5;
+  }
+
+  .lcd-preview {
+    background: #060709;
+    border: 1px solid #ff4e00;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff9900;
+    text-shadow: 0 0 8px rgba(255, 153, 0, 0.4);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+    z-index: 5;
+  }
+
+  .badges {
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+  }
+  .badge {
+    background: #141720;
+    border: 1px solid #242938;
+    color: #00ff66;
+    font-size: 9px;
+    font-weight: 700;
+    font-family: monospace;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="logo-box">@</div>
+
+  <div class="brand-title">
+    gecici.email <span>v1.1</span>
+  </div>
+
+  <div class="tagline">TEK KULLANIMLIK GEÇİCİ E-POSTA & ANINDA OTP</div>
+
+  <div class="lcd-preview">
+    zen_4892@gecici.email
+  </div>
+
+  <div class="badges">
+    <div class="badge">0-LOG</div>
+    <div class="badge">SAĞ TIK DOLDURMA</div>
+    <div class="badge">OTP YAKALAYICI</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Mono", monospace; }
+  body {
+    width: 1280px;
+    height: 800px;
+    background: radial-gradient(circle at 50% 30%, #151822 0%, #08090c 100%);
+    color: #e4e5e8;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 48px 60px 40px;
+  }
+  
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .header { text-align: center; z-index: 10; position: relative; }
+  .brand-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 153, 0, 0.1);
+    border: 1px solid rgba(255, 153, 0, 0.4);
+    font-size: 13px;
+    font-weight: 700;
+    color: #ff9900;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .title { font-size: 38px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .title span { color: #ff9900; }
+  .subtitle { font-size: 16px; color: #8a92a6; max-width: 700px; line-height: 1.5; }
+
+  /* Desktop Mockup Area */
+  .desktop-area {
+    width: 960px;
+    height: 480px;
+    background: #0d0e14;
+    border: 2px solid #232734;
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 153, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: radial-gradient(circle at 80% 80%, rgba(255, 78, 0, 0.08) 0%, transparent 60%);
+  }
+
+  /* Center Visual: The OTP Engine */
+  .otp-showcase {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .card-inbound {
+    width: 320px;
+    background: #14161f;
+    border: 1px solid #282f42;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .inbound-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    font-family: monospace;
+    color: #6c7284;
+    border-bottom: 1px solid #202534;
+    padding-bottom: 8px;
+  }
+  .inbound-body {
+    font-size: 11px;
+    color: #9aa3b8;
+    line-height: 1.5;
+  }
+  .inbound-body strong { color: #ffffff; }
+
+  /* Big Arrow */
+  .flow-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #ff4e00;
+  }
+  .arrow-line { font-size: 28px; font-weight: 900; }
+  .arrow-tag { font-size: 9px; font-family: monospace; background: #1c202b; padding: 2px 8px; border-radius: 4px; border: 1px solid #2e3547; color: #ff9900; }
+
+  /* Desktop Notification Widget */
+  .notification-widget {
+    width: 360px;
+    background: rgba(18, 20, 26, 0.95);
+    backdrop-filter: blur(12px);
+    border: 2px solid #ff4e00;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 78, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .notif-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .notif-brand { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: #8a92a6; }
+  .notif-logo { width: 18px; height: 18px; background: #ff4e00; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 10px; }
+  .notif-time { font-size: 10px; color: #525768; }
+
+  .notif-title { font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px; }
+  .notif-title span { color: #00ff66; font-family: monospace; font-size: 16px; }
+  .notif-desc { font-size: 11px; color: #9aa3b8; line-height: 1.4; }
+
+  .notif-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .btn-copy-otp {
+    flex: 1;
+    background: #00ff66;
+    color: #000000;
+    font-weight: 800;
+    font-size: 11px;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    border: none;
+    box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
+  }
+  .btn-open-inbox {
+    background: #1c202c;
+    border: 1px solid #2e3547;
+    color: #e4e5e8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+
+  /* Footer Badges */
+  .footer-features { display: flex; gap: 20px; z-index: 10; }
+  .feat-pill {
+    background: #121419;
+    border: 1px solid #242733;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8a92a6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+  }
+  .feat-pill span { color: #ff9900; }
+</style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="header">
+    <div class="brand-tag">⚡ ANINDA GÜVENLİK KODU</div>
+    <h1 class="title">Akıllı OTP & <span>Masaüstü Bildirimi</span></h1>
+    <p class="subtitle">E-posta kutusunu açmanıza gerek yok. Gelen 4-8 haneli doğrulama kodları otomatik ayıklanır ve panoya aktarılır.</p>
+  </div>
+
+  <div class="desktop-area">
+    <div class="otp-showcase">
+      <!-- 1. Incoming Email Sample -->
+      <div class="card-inbound">
+        <div class="inbound-head">
+          <span>GELEN POSTA // RFC-5322</span>
+          <span style="color:#00ff66">TESLİM EDİLDİ</span>
+        </div>
+        <div class="inbound-body">
+          <strong>Kimden:</strong> verify@discord.com<br>
+          <strong>Konu:</strong> Discord Hesabınızı Doğrulayın<br><br>
+          Merhaba, Discord kaydınızı tamamlamak için aşağıdaki güvenlik kodunu girin:<br><br>
+          <div style="background:#07080a;padding:8px;border-radius:6px;text-align:center;font-family:monospace;font-size:16px;color:#ff9900;font-weight:800;letter-spacing:2px">
+            582-901
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Processing Engine -->
+      <div class="flow-arrow">
+        <div class="arrow-tag">SMART EXTRACT</div>
+        <div class="arrow-line">➔</div>
+      </div>
+
+      <!-- 3. Desktop Notification -->
+      <div class="notification-widget">
+        <div class="notif-top">
+          <div class="notif-brand">
+            <div class="notif-logo">@</div>
+            <span>gecici.email BİLDİRİMİ</span>
+          </div>
+          <div class="notif-time">şimdi</div>
+        </div>
+        <div class="notif-title">
+          🔥 OTP Kodu: <span>582-901</span>
+        </div>
+        <div class="notif-desc">
+          Discord Security tarafından iletildi. Kod otomatik panoya kopyalandı!
+        </div>
+        <div class="notif-actions">
+          <div class="btn-copy-otp">✓ PANODA HAZIR (CTRL+V)</div>
+          <div class="btn-open-inbox">Kutuyu Aç ↗</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-features">
+    <div class="feat-pill"><span>■</span> HEURISTIC & REGEX PARSER</div>
+    <div class="feat-pill"><span>■</span> ÇOK DİLLİ DESTEK (TR/EN/DE)</div>
+    <div class="feat-pill"><span>■</span> ANINDA MASAÜSTÜ POPUP</div>
+    <div class="feat-pill"><span>■</span> TEK TIKLA DOĞRULAMA</div>
+  </div>
+</body>
+</html>
