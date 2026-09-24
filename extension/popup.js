@@ -279,3 +279,23 @@ btnCustomSave.addEventListener('click', async () => {
 btnWeb.addEventListener('click', () => {
   chrome.tabs.create({ url: `https://gecici.email/?inbox=${encodeURIComponent(currentAddress)}` });
 });
+
+const btnSidePanel = document.getElementById('btnSidePanel');
+if (btnSidePanel) {
+  if (!chrome.sidePanel) {
+    btnSidePanel.style.display = 'none';
+  } else {
+    btnSidePanel.addEventListener('click', async () => {
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab?.windowId) {
+          await chrome.sidePanel.open({ windowId: tab.windowId });
+          window.close();
+        }
+      } catch (e) {
+        console.error('Side panel open error:', e);
+      }
+    });
+  }
+}
+
