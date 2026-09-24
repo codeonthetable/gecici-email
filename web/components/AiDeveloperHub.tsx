@@ -101,11 +101,11 @@ export default function AiDeveloperHub() {
           <div>
             <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-tight flex items-center gap-2">
               <span>YAPAY ZEKA & GELİŞTİRİCİ EKOSİSTEMİ</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 font-normal">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 font-bold">
                 RESMİ ARAÇLAR
               </span>
             </h2>
-            <p className="text-[11px] text-[#6c7284]">
+            <p className="text-[11px] text-[#94a3b8]">
               Claude, Cursor, browser-use, CrewAI, LangChain ve geliştiriciler için açık kaynaklı altyapı
             </p>
           </div>
@@ -115,7 +115,7 @@ export default function AiDeveloperHub() {
           href="https://github.com/codeonthetable/gecici-email"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs text-[#ff4e00] hover:text-[#ff7836] font-semibold transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-[#ff4e00] hover:text-[#ff7836] font-bold transition-colors"
         >
           <Github className="w-3.5 h-3.5" />
           <span>codeonthetable/gecici-email →</span>
@@ -129,8 +129,8 @@ export default function AiDeveloperHub() {
             key={idx}
             className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between space-y-3 ${
               t.highlight
-                ? 'bg-[#181b22] border-[#ff4e00]/50 shadow-[0_0_25px_rgba(255,78,0,0.1)]'
-                : 'bg-[#090a0d] border-[#1f222b] hover:border-[#2e3342]'
+                ? 'bg-[#181b22] border-[#ff4e00]/60 shadow-[0_0_25px_rgba(255,78,0,0.15)]'
+                : 'bg-[#090a0d] border-[#242733] hover:border-[#3b4356]'
             }`}
           >
             <div className="space-y-2">
@@ -139,7 +139,7 @@ export default function AiDeveloperHub() {
                   {t.icon}
                 </div>
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded border font-medium ${t.badgeColor}`}
+                  className={`text-[10px] px-2 py-0.5 rounded border font-bold ${t.badgeColor}`}
                 >
                   {t.badge}
                 </span>
@@ -147,10 +147,10 @@ export default function AiDeveloperHub() {
 
               <div>
                 <h3 className="text-xs font-bold text-white tracking-tight">{t.title}</h3>
-                <code className="text-[10px] text-[#6c7284] block truncate mt-0.5">{t.slug}</code>
+                <code className="text-[10px] text-[#94a3b8] block truncate mt-0.5 font-bold">{t.slug}</code>
               </div>
 
-              <p className="text-[11px] text-[#8a92a6] leading-relaxed line-clamp-3">
+              <p className="text-[11px] text-[#cbd5e1] leading-relaxed line-clamp-3">
                 {t.description}
               </p>
             </div>
@@ -181,18 +181,18 @@ export default function AiDeveloperHub() {
       </div>
 
       {/* Quick Terminal Snippet Banner */}
-      <div className="p-4 rounded-2xl bg-[#08090b] border border-[#1f222b] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div className="p-4 rounded-2xl bg-[#08090b] border border-[#242733] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
           <Terminal className="w-4 h-4 text-[#00ff66]" />
-          <span className="text-[#8a92a6]">Claude Desktop / Cursor Hızlı Kurulum:</span>
+          <span className="text-[#cbd5e1] font-medium">Claude Desktop / Cursor Hızlı Kurulum:</span>
         </div>
         <div className="flex items-center gap-2">
-          <code className="px-3 py-1.5 rounded-lg bg-[#12141a] text-[#00ff66] border border-[#1f222b] font-mono text-[11px] select-all">
+          <code className="px-3 py-1.5 rounded-lg bg-[#12141a] text-[#00ff66] border border-[#242733] font-mono text-[11px] select-all font-bold">
             npx -y gecici-email-mcp
           </code>
           <Link
             href="/ai-ajanlar"
-            className="text-[11px] text-[#ff4e00] hover:underline font-semibold whitespace-nowrap"
+            className="text-[11px] text-[#ff4e00] hover:text-[#ff7836] hover:underline font-bold whitespace-nowrap"
           >
             Tüm Kılavuz →
           </Link>

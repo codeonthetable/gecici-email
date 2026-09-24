@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr">
+    <html lang="tr" className="dark">
       <head>
         {/* Google Site Verification */}
         <meta name="google-site-verification" content="aPyvosNucF2wSU63f3hCiAdFLTK76T0owkAApPSOCPg" />
@@ -49,7 +51,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#0e0f12] text-[#e4e5e8] antialiased selection:bg-[#ff4e00] selection:text-black">
+      <body className="min-h-screen bg-[#0e0f12] text-[#e4e5e8] antialiased selection:bg-[#ff4e00] selection:text-black flex flex-col justify-between">
         {/* Google Analytics (gtag.js) */}
         <Script
           strategy="afterInteractive"
@@ -68,7 +70,13 @@ export default function RootLayout({
           }}
         />
 
-        {children}
+        <Navbar />
+
+        <div className="flex-1">
+          {children}
+        </div>
+
+        <Footer />
       </body>
     </html>
   );

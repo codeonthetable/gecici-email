@@ -15,6 +15,7 @@ import {
   GitPullRequest,
   Boxes,
   Zap,
+  ArrowLeft,
 } from 'lucide-react';
 import AdPlaceholder from '../../components/AdPlaceholder';
 
@@ -69,19 +70,31 @@ export default function AiAgentsPage() {
       />
 
       <div className="py-8 md:py-12 space-y-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 font-sans">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#8a92a6]">
-          <Link href="/" className="hover:text-white hover:underline">
-            HOME
+        
+        {/* Navigation Breadcrumb & Back to Home Button */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#242733]">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
+            <Link href="/" className="hover:text-white hover:underline flex items-center gap-1.5">
+              <ArrowLeft className="w-3.5 h-3.5 text-[#ff4e00]" />
+              <span>KONSOL</span>
+            </Link>
+            <span className="text-[#475569]">/</span>
+            <span className="text-[#00ff66] font-bold">AI_AGENTS_HUB</span>
+          </div>
+
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 self-start sm:self-auto px-3 py-1.5 rounded-xl bg-[#141720] hover:bg-[#1e2330] text-white text-xs font-mono font-bold border border-[#2e3342] hover:border-[#ff4e00] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 text-[#ff4e00]" />
+            <span>E-POSTA KONSOLUNA DÖN</span>
           </Link>
-          <span>/</span>
-          <span className="text-[#00ff66]">AI_AGENTS_HUB</span>
         </div>
 
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-medium">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#00ff66] text-xs font-mono font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#00ff66] animate-pulse"></span>
             <span>MODEL CONTEXT PROTOCOL & AI AGENT ECOSYSTEM</span>
           </div>
 
@@ -92,7 +105,7 @@ export default function AiAgentsPage() {
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#8a92a6] max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base text-[#cbd5e1] max-w-2xl mx-auto leading-relaxed font-normal">
             Claude Desktop, Cursor, browser-use, CrewAI veya LangChain ajanlarınız web kayıtlarında,
             2FA güvenlik bariyerlerinde ve OTP doğrulama duvarlarında takılmadan görevlerini otonom tamamlasın.
           </p>
@@ -100,9 +113,9 @@ export default function AiAgentsPage() {
 
         {/* Official Ecosystem & Verification Banner */}
         <section className="bg-[#121419] border-2 border-[#242733] rounded-3xl p-6 sm:p-8 font-mono space-y-4 shadow-sm">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1f222b] text-[11px] text-[#6c7284]">
-            <span className="font-bold text-[#e4e5e8]">RESMİ DOĞRULANMIŞ ENTEGRASYONLAR</span>
-            <span className="text-[#00ff66]">LIVE & VERIFIED</span>
+          <div className="flex items-center justify-between pb-3 border-b border-[#1f222b] text-[11px] text-[#94a3b8]">
+            <span className="font-bold text-white">RESMİ DOĞRULANMIŞ ENTEGRASYONLAR</span>
+            <span className="text-[#00ff66] font-bold">LIVE & VERIFIED</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
@@ -111,14 +124,14 @@ export default function AiAgentsPage() {
               href="https://github.com/codeonthetable/gecici-email"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#1f222b] hover:border-[#ff4e00] transition-colors space-y-1 group"
+              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#242733] hover:border-[#ff4e00] transition-colors space-y-1 group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-[#ff4e00] font-bold">GITHUB // REPO</span>
-                <ExternalLink className="w-3 h-3 text-[#6c7284] group-hover:text-white" />
+                <ExternalLink className="w-3 h-3 text-[#94a3b8] group-hover:text-white" />
               </div>
               <div className="font-bold text-white text-xs">codeonthetable/gecici-email</div>
-              <p className="text-[11px] text-[#6c7284]">Resmi açık kaynak depo</p>
+              <p className="text-[11px] text-[#cbd5e1]">Resmi açık kaynak depo</p>
             </a>
 
             {/* Smithery */}
@@ -126,14 +139,14 @@ export default function AiAgentsPage() {
               href="https://smithery.ai/server/gecici-email"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#1f222b] hover:border-orange-500 transition-colors space-y-1 group"
+              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#242733] hover:border-orange-500 transition-colors space-y-1 group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-orange-400 font-bold">SMITHERY // MCP</span>
-                <ExternalLink className="w-3 h-3 text-[#6c7284] group-hover:text-white" />
+                <ExternalLink className="w-3 h-3 text-[#94a3b8] group-hover:text-white" />
               </div>
               <div className="font-bold text-white text-xs">gecici-email (Smithery)</div>
-              <p className="text-[11px] text-[#6c7284]">Doğrulanmış 5 araçlı sunucu</p>
+              <p className="text-[11px] text-[#cbd5e1]">Doğrulanmış 5 araçlı sunucu</p>
             </a>
 
             {/* browser-use PR */}
@@ -141,27 +154,27 @@ export default function AiAgentsPage() {
               href="https://github.com/browser-use/browser-use/pull/5890"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#1f222b] hover:border-emerald-500 transition-colors space-y-1 group"
+              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#242733] hover:border-emerald-500 transition-colors space-y-1 group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-emerald-400 font-bold">BROWSER-USE (116k★)</span>
-                <ExternalLink className="w-3 h-3 text-[#6c7284] group-hover:text-white" />
+                <ExternalLink className="w-3 h-3 text-[#94a3b8] group-hover:text-white" />
               </div>
               <div className="font-bold text-white text-xs">Resmi PR #5890</div>
-              <p className="text-[11px] text-[#6c7284]">Otonom kayıt & OTP örneği</p>
+              <p className="text-[11px] text-[#cbd5e1]">Otonom kayıt & OTP örneği</p>
             </a>
 
             {/* Live SSE Gateway */}
             <Link
               href="/mcp"
-              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#1f222b] hover:border-cyan-500 transition-colors space-y-1 group"
+              className="p-3.5 bg-[#08090b] rounded-2xl border border-[#242733] hover:border-cyan-500 transition-colors space-y-1 group"
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-cyan-400 font-bold">STREAMABLE HTTP</span>
-                <span className="text-[#6c7284] group-hover:text-white">→</span>
+                <span className="text-[#94a3b8] group-hover:text-white">→</span>
               </div>
               <div className="font-bold text-white text-xs">https://gecici.email/mcp</div>
-              <p className="text-[11px] text-[#6c7284]">Canlı SSE MCP gateway</p>
+              <p className="text-[11px] text-[#cbd5e1]">Canlı SSE MCP gateway</p>
             </Link>
           </div>
         </section>
@@ -170,11 +183,11 @@ export default function AiAgentsPage() {
 
         {/* Problem vs Solution Comparison */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono">
-          <div className="bg-[#140b0e] rounded-3xl border border-red-950/60 p-6 space-y-3">
+          <div className="bg-[#140b0e] rounded-3xl border border-red-950/80 p-6 space-y-3">
             <div className="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center gap-2">
               <span>❌ Geleneksel Temp-Mail Servisleri</span>
             </div>
-            <ul className="space-y-2 text-xs text-[#8a92a6]">
+            <ul className="space-y-2 text-xs text-[#cbd5e1]">
               <li className="flex items-start gap-2">
                 <span className="text-red-500 font-bold">•</span>
                 <span>Cloudflare CAPTCHA ve bot engelleyiciler otonom ajanları bloke eder.</span>
@@ -190,11 +203,11 @@ export default function AiAgentsPage() {
             </ul>
           </div>
 
-          <div className="bg-[#0b1411] rounded-3xl border border-emerald-950/60 p-6 space-y-3">
+          <div className="bg-[#0b1411] rounded-3xl border border-emerald-950/80 p-6 space-y-3">
             <div className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
               <span>✅ gecici.email Agent-Native Mimarisi</span>
             </div>
-            <ul className="space-y-2 text-xs text-[#8a92a6]">
+            <ul className="space-y-2 text-xs text-[#cbd5e1]">
               <li className="flex items-start gap-2">
                 <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                 <span>Sıfır CAPTCHA, doğrudan Model Context Protocol, REST ve canlı SSE akışı.</span>
@@ -221,15 +234,15 @@ export default function AiAgentsPage() {
               <h2 className="text-lg sm:text-xl font-bold text-white">
                 Model Context Protocol (MCP) Kurulumu
               </h2>
-              <p className="text-xs text-[#6c7284]">Claude Desktop, Cursor IDE ve Antigravity ile tam uyumlu</p>
+              <p className="text-xs text-[#94a3b8]">Claude Desktop, Cursor IDE ve Antigravity ile tam uyumlu</p>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-[#8a92a6] leading-relaxed">
-            Claude Desktop veya Cursor <code className="text-[#00ff66] font-semibold">claude_desktop_config.json</code> dosyanıza aşağıdaki konfigürasyonu ekleyin:
+          <p className="text-xs sm:text-sm text-[#cbd5e1] leading-relaxed">
+            Claude Desktop veya Cursor <code className="text-[#00ff66] font-bold">claude_desktop_config.json</code> dosyanıza aşağıdaki konfigürasyonu ekleyin:
           </p>
 
-          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-[#00ff66] overflow-x-auto border border-[#1f222b]">
+          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-[#00ff66] overflow-x-auto border border-[#242733]">
 <pre>{`{
   "mcpServers": {
     "gecici-email": {
@@ -240,26 +253,26 @@ export default function AiAgentsPage() {
 }`}</pre>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
               Ajanınızın Çağırabileceği Hazır MCP Araçları:
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-[#08090b] border border-[#1f222b]">
+              <div className="p-3 rounded-xl bg-[#08090b] border border-[#242733]">
                 <code className="font-bold text-[#ff9900]">gecici_create_inbox()</code>
-                <p className="text-[#6c7284] mt-1">Anında yeni geçici e-posta adresi açar.</p>
+                <p className="text-[#cbd5e1] mt-1">Anında yeni geçici e-posta adresi açar.</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#08090b] border border-[#1f222b]">
+              <div className="p-3 rounded-xl bg-[#08090b] border border-[#242733]">
                 <code className="font-bold text-[#00ff66]">gecici_wait_for_otp()</code>
-                <p className="text-[#6c7284] mt-1">Gelen maildeki 4-8 haneli güvenlik kodunu döner.</p>
+                <p className="text-[#cbd5e1] mt-1">Gelen maildeki 4-8 haneli güvenlik kodunu döner.</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#08090b] border border-[#1f222b]">
+              <div className="p-3 rounded-xl bg-[#08090b] border border-[#242733]">
                 <code className="font-bold text-[#00f0ff]">gecici_wait_for_magic_link()</code>
-                <p className="text-[#6c7284] mt-1">Onay ve aktivasyon linkini tek seferde döner.</p>
+                <p className="text-[#cbd5e1] mt-1">Onay ve aktivasyon linkini tek seferde döner.</p>
               </div>
-              <div className="p-3 rounded-xl bg-[#08090b] border border-[#1f222b]">
+              <div className="p-3 rounded-xl bg-[#08090b] border border-[#242733]">
                 <code className="font-bold text-purple-400">gecici_get_ai_summary()</code>
-                <p className="text-[#6c7284] mt-1">LLM için tokenize edilmiş yüksek sinyalli özet.</p>
+                <p className="text-[#cbd5e1] mt-1">LLM için tokenize edilmiş yüksek sinyalli özet.</p>
               </div>
             </div>
           </div>
@@ -275,17 +288,17 @@ export default function AiAgentsPage() {
               <h2 className="text-lg sm:text-xl font-bold text-white">
                 browser-use Otonom Gezgin Entegrasyonu
               </h2>
-              <p className="text-xs text-[#6c7284]">
+              <p className="text-xs text-[#94a3b8]">
                 116.000+ Star Alan browser-use Kütüphanesi İçin Resmi Örnek
               </p>
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-[#8a92a6] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#cbd5e1] leading-relaxed">
             Ajanınız web sitelerine otomatik kayıt olurken tek tıkla e-posta üretsin ve OTP onay kodunu bekleyip forma girsin:
           </p>
 
-          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-emerald-300 overflow-x-auto border border-[#1f222b]">
+          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-emerald-300 overflow-x-auto border border-[#242733]">
 <pre>{`import asyncio
 from browser_use import Agent, Tools, ActionResult
 from gecici import GeciciEmail
@@ -322,11 +335,11 @@ asyncio.run(agent.run())`}</pre>
               <h2 className="text-lg sm:text-xl font-bold text-white">
                 Python SDK v1.1.0 & LangChain / CrewAI
               </h2>
-              <p className="text-xs text-[#6c7284]">pip install gecici-email</p>
+              <p className="text-xs text-[#94a3b8]">pip install gecici-email</p>
             </div>
           </div>
 
-          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-indigo-300 overflow-x-auto border border-[#1f222b]">
+          <div className="bg-[#08090b] rounded-2xl p-4 font-mono text-xs text-indigo-300 overflow-x-auto border border-[#242733]">
 <pre>{`from gecici import GeciciEmail
 from gecici.integrations.langchain import GeciciEmailToolkit
 
@@ -342,20 +355,6 @@ tools = toolkit.get_tools() # [create_inbox, wait_for_otp, wait_for_link]`}</pre
           </div>
         </section>
 
-        {/* Footer info */}
-        <div className="pt-6 border-t border-[#1f222b] text-center text-xs font-mono text-[#6c7284]">
-          <p>
-            gecici.email altyapısı açık kaynaktır.{' '}
-            <a
-              href="https://github.com/codeonthetable/gecici-email"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#ff4e00] hover:underline"
-            >
-              GitHub üzerinden katkıda bulunabilirsiniz.
-            </a>
-          </p>
-        </div>
       </div>
     </>
   );
