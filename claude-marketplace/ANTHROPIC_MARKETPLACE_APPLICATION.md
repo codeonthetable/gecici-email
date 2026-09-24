@@ -16,21 +16,29 @@ Claude'un web sitelerinde veya otomatik test süreçlerinde en çok tıkandığ�
 
 ---
 
-## 📝 2. Claude Marketplace Partner Başvuru Formu Hazır Yanıtları
+## 📝 2. Claude Marketplace Partner Başvuru Formu & Hazır Yanıtları
 
-Form Adresi: **[claude.com/platform/marketplace](https://claude.com/platform/marketplace)** (veya Anthropic Partner Intake)
+Doğrudan Başvuru Sayfası: **[https://claude.com/marketplace-partners](https://claude.com/marketplace-partners)**  
+*(Not: Form HubSpot altyapısıyla yüklendiği için tarayıcınızdaki AdBlock / Reklam Engelleyici kapalı olmalıdır.)*
 
-| Form Alanı | Doldurulacak Bilgi |
-| :--- | :--- |
-| **Product / Tool Name** | `gecici.email - Disposable Email & Smart OTP Extraction for Claude` |
-| **Company / Developer Name** | `gecici.email (codeonthetable)` |
-| **Primary Category** | `Connectors & Plugins` (Alternatif: `Developer Tools / Automation`) |
-| **Website URL** | `https://gecici.email` |
-| **Public GitHub Repository** | `https://github.com/codeonthetable/gecici-email` |
-| **Live MCP Endpoint (SSE / HTTP)** | `https://gecici.email/mcp` |
-| **Well-Known MCP Metadata** | `https://gecici.email/.well-known/mcp/server-card.json` |
-| **Machine-Readable LLM Docs** | `https://gecici.email/llms.txt` |
-| **Contact Email** | `support@gecici.email` |
+### Form Alanları ve Doldurulacak Bilgiler:
+
+| Form Alanı | Soru / Etiket | Bizim Yanıtımız |
+| :--- | :--- | :--- |
+| **First name** | Adınız | *(Kendi adınız)* |
+| **Last name** | Soyadınız | *(Kendi soyadınız)* |
+| **Business email** | Kurumsal E-posta | `support@gecici.email` (veya kendi e-postanız) |
+| **Job title** | Unvanınız | `Founder / Software Engineer` |
+| **Company name** | Şirket / Proje Adı | `gecici.email` |
+| **Country** | Ülke | `Turkey` |
+| **Is your product built on Claude today?** | Ürününüz Claude üzerinde mi kurulu? | **Yes** *(MCP connector ve Claude entegrasyonumuz aktif)* |
+| **Target customer / use case** | Hedef Müşteri & Kullanım Senaryosu | *Aşağıdaki hazır metin* |
+| **Industry** | Sektör | `Software` |
+| **Anthropic Organization UUID** | Anthropic Hesap Kimliği | *(Opsiyonel - platform.claude.com ayarlarınızdan kopyalayabilirsiniz)* |
+
+### "Target customer / use case" İçin Hazır Metin (Kopyala & Yapıştır):
+> "Autonomous disposable email inbox and smart OTP/verification code extraction MCP server for Claude and AI Agents. Target customers are AI developers, QA automation teams, and Claude users who build autonomous web agents (browser-use, Claude Code, SaaS onboarding). Enables Claude to bypass email verification roadblocks automatically without human intervention. Live at https://gecici.email and https://gecici.email/mcp"
+
 
 ### Kısa Açıklama (One-line summary - Max 120 chars)
 > Autonomous disposable email inbox and smart OTP code extraction connector for Claude and AI Agents.
