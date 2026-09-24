@@ -1,0 +1,124 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.codeonthetable/gecici-email",
+  "title": "gecici.email - Disposable Email & OTP Extraction",
+  "description": "Autonomous disposable email inbox, smart OTP/verification code extraction, and activation link parser for Claude, Claude Code, and AI Agents.",
+  "version": "1.0.0",
+  "websiteUrl": "https://gecici.email",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeonthetable/gecici-email"
+  },
+  "license": "MIT",
+  "categories": [
+    "developer-tools",
+    "automation",
+    "testing",
+    "communication"
+  ],
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://gecici.email/mcp"
+  },
+  "packages": [
+    {
+      "registry": "npm",
+      "name": "gecici-email-mcp",
+      "version": "1.0.0",
+      "command": "gecici-email-mcp"
+    },
+    {
+      "registry": "docker",
+      "image": "ghcr.io/codeonthetable/gecici-email-mcp:latest"
+    }
+  ],
+  "capabilities": {
+    "tools": [
+      {
+        "name": "create_inbox",
+        "description": "Generate a new disposable email address instantly on gecici.email with custom or random prefix.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "prefix": {
+              "type": "string",
+              "description": "Optional custom mailbox prefix (e.g. 'claude-test-99'). Defaults to random secure ID."
+            }
+          }
+        }
+      },
+      {
+        "name": "wait_for_otp",
+        "description": "Wait and automatically extract a 4-8 digit OTP verification code (e.g., 554901) from incoming emails.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "The email address to listen on (e.g., 'bahadir@gecici.email')."
+            },
+            "timeout_seconds": {
+              "type": "number",
+              "description": "Max timeout in seconds (default: 60)."
+            }
+          },
+          "required": ["address"]
+        }
+      },
+      {
+        "name": "wait_for_link",
+        "description": "Wait and automatically extract activation, confirmation, or password reset links from incoming emails.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "The email address to listen on."
+            },
+            "pattern": {
+              "type": "string",
+              "description": "Optional keyword or regex to match specific URLs (e.g. 'verify', 'confirm')."
+            },
+            "timeout_seconds": {
+              "type": "number",
+              "description": "Max timeout in seconds (default: 60)."
+            }
+          },
+          "required": ["address"]
+        }
+      },
+      {
+        "name": "get_messages",
+        "description": "List all received emails for a specific inbox with metadata and subject.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "The email address."
+            }
+          },
+          "required": ["address"]
+        }
+      },
+      {
+        "name": "get_message_content",
+        "description": "Get full text body, HTML content, headers, and parsed codes for a specific message.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "The email address."
+            },
+            "message_id": {
+              "type": "string",
+              "description": "The unique message ID."
+            }
+          },
+          "required": ["address", "message_id"]
+        }
+      }
+    ]
+  }
+}
