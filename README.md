@@ -1,0 +1,35 @@
+# gecici.email — ücretsiz geçici e-posta ve AI ajan bağlantısı
+
+[Web’de kullan](https://gecici.email) · [AI ajanı/MCP rehberi](https://gecici.email/ai-ajanlar) · [REST API](https://gecici.email/api-dokuman) · [Gizlilik](https://gecici.email/gizlilik-ve-guvenlik)
+
+gecici.email, insanlara ve AI ajanlarına yetkili geliştirme ve test işlerinde kullanabilecekleri kısa ömürlü, yalnızca alıcı e-posta kutuları sunar. Hizmet ücretsizdir. Bir hesap açmak, bu depoyu klonlamak veya paket kurmak gerekmez.
+
+Bu herkese açık depo **yalnızca bağlantı ve kullanım kılavuzudur**. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Bu depoya verilen lisans, gecici.email hizmetinin veya özel ürün kodunun lisansı değildir.
+
+## Claude’a ekle
+
+Claude’da **Customize → Connectors → + → Add custom connector** yolunu açıp uzak MCP adresi olarak şunu girin:
+
+```text
+https://gecici.email/mcp
+```
+
+Bağlayıcıyı ilgili konuşmada etkinleştirin. Claude’un güncel menüleri ve plan erişimi için [resmî özel bağlayıcı kılavuzuna](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) bakın. Bu işlem GitHub kaynak kodunu Claude’a yüklemez.
+
+## Diğer AI ajanları ve geliştiriciler
+
+Uzak *Streamable HTTP MCP* destekleyen istemciye aynı `https://gecici.email/mcp` URL’sini ekleyin. REST isteyen istemciler `https://gecici.email/api/v1` adresini ve [REST örneklerini](docs/REST.md) kullanabilir. Çalışma akışı:
+
+1. `gecici_create_inbox` ile kutu oluşturun; adres, erişim tokenı ve süreyi alın.
+2. Yalnızca adresi, kullanmaya yetkili olduğunuz test akışına verin.
+3. İletileri, OTP’yi veya doğrulama bağlantısını adres **ve token** ile okuyun. Boş kutu veya bulunamayan kod başarı sayılmaz.
+
+Tokenı üçüncü taraf sitelere, herkese açık istemlere veya loglara koymayın. Araç bağlantıyı çıkarır; bağlantıyı otomatik açmaz. Hizmet CAPTCHA/kimlik doğrulama atlatmaz ve dış göndericilerden e-posta teslimini garanti etmez. Hassas hesaplar veya gerçek kullanıcı verileri için kullanmayın.
+
+Manuel seçilen adresler 4–32 ASCII karakter, en az bir rakam ve içeride `-`, `_` veya `.` gerektirir; resmî/korumalı adlar ayrı tutulur. Rastgele adres oluşturma bu koşula bağlı değildir. Varsayılan kutu ömrü 60 dakikadır. Saklama ve silme sınırları [gizlilik sayfasında](https://gecici.email/gizlilik-ve-guvenlik) açıklanır.
+
+## In English
+
+gecici.email is a free, receive-only temporary inbox service for people and AI agents in authorized development and QA workflows. Add `https://gecici.email/mcp` as a remote MCP connector, or use the [REST API](https://gecici.email/api-dokuman). Inbox creation returns an address and access token; all reads require that token. No account, source download, or unpublished npm/PyPI package is required. Do not use it for sensitive accounts or real user data. External email delivery is not guaranteed.
+
+This repository contains integration documentation only, not the product implementation. Its license does not apply to the hosted service or private source code.
