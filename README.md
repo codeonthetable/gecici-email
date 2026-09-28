@@ -1,6 +1,6 @@
 # gecici.email — indirip çalıştırılabilir geçici e-posta uygulaması
 
-[Web’de kullan](https://gecici.email) · [AI ajanı/MCP rehberi](https://gecici.email/ai-ajanlar) · [REST API](https://gecici.email/api-dokuman) · [Gizlilik](https://gecici.email/gizlilik-ve-guvenlik)
+[ZIP olarak indir](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Web’de kullan](https://gecici.email) · [AI ajanı/MCP rehberi](https://gecici.email/ai-ajanlar) · [REST API](https://gecici.email/api-dokuman) · [Gizlilik](https://gecici.email/gizlilik-ve-guvenlik)
 
 gecici.email, insanlara ve AI ajanlarına yetkili geliştirme ve test işlerinde kullanabilecekleri kısa ömürlü, yalnızca alıcı e-posta kutuları sunar. Hizmet ücretsizdir.
 
@@ -20,7 +20,7 @@ Yeni kutunun erişim tokenı yalnızca oluşturulurken gösterilir. Uygulama tok
 
 Katkı veya yerel kontrol için testler: `python3 -m unittest discover -s tests -v`. Uygulama başka servislerin CAPTCHA veya doğrulama süreçlerini aşmaz; yalnızca kendi kutunuza ulaşmış postayı gösterir.
 
-Bu depoda açık olan kaynak, yalnızca `app.py` istemcisi ve entegrasyon belgeleridir. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Depodaki MIT lisansı sadece bu açık istemci ve belgelere uygulanır; barındırılan hizmete veya özel ürün koduna uygulanmaz.
+Bu depoda açık olan kaynak, yalnızca `desktop.py`/`app.py` istemcileri ve entegrasyon belgeleridir. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Depodaki MIT lisansı sadece bu açık istemcilere ve belgelere uygulanır; barındırılan hizmete veya özel ürün koduna uygulanmaz.
 
 ## Claude’a ekle
 
