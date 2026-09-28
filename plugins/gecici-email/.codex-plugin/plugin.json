@@ -1,0 +1,32 @@
+{
+  "name": "gecici-email",
+  "version": "0.1.0",
+  "description": "Create and read token-protected temporary inboxes for authorized testing through the hosted gecici.email MCP server.",
+  "author": {
+    "name": "Datakobi Bilişim Teknoloji",
+    "email": "iletisim@gecici.email",
+    "url": "https://gecici.email"
+  },
+  "homepage": "https://gecici.email/en/agents.html",
+  "repository": "https://github.com/codeonthetable/gecici-email",
+  "license": "MIT",
+  "keywords": ["temporary-email", "qa", "mcp", "inbox"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "gecici.email",
+    "shortDescription": "Temporary inboxes for authorized testing",
+    "longDescription": "Create a receive-only inbox and read its messages, verification codes and links using the private access token. The plugin connects to the hosted gecici.email service; no mail server is installed locally.",
+    "developerName": "Datakobi Bilişim Teknoloji",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://gecici.email/en/",
+    "privacyPolicyURL": "https://gecici.email/en/privacy.html",
+    "defaultPrompt": [
+      "Create a temporary inbox for my authorized QA test.",
+      "Check my temporary inbox for a verification code.",
+      "Summarize the latest message in my temporary inbox."
+    ],
+    "brandColor": "#FF4E00"
+  },
+  "mcpServers": "./.mcp.json"
+}

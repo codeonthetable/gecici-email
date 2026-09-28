@@ -1,10 +1,10 @@
 # gecici.email — free temporary email for people and AI agents
 
-[Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention (Turkish)](https://gecici.email/gizlilik-ve-guvenlik)
+[Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
 
 gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
-The downloadable clients and documentation in this repository are in English. Some pages on the hosted gecici.email website, including its privacy policy, are currently in Turkish.
+The downloadable clients and documentation in this repository are in English. The hosted site has an [English inbox and guide](https://gecici.email/en/) as well as Turkish pages.
 
 ## Download and run
 
@@ -28,6 +28,19 @@ Run the local test suite with:
 python3 -m unittest discover -s tests -v
 ```
 
+## Connect Codex
+
+The [`gecici-email` plugin](plugins/gecici-email/.codex-plugin/plugin.json) bundles a remote MCP connection and a short agent workflow. It uses the hosted `https://gecici.email/mcp` service; installation does not expose or install the private mail server.
+
+In a Codex version with plugin support, add this repository as a marketplace and install the plugin:
+
+```sh
+codex plugin marketplace add codeonthetable/gecici-email --ref main
+codex plugin add gecici-email@personal
+```
+
+Restart Codex or open a new task after installation, then ask it to create a temporary inbox for an authorized QA test. The plugin is distributed from this GitHub repository; it is **not** a claim of approval or listing in OpenAI's public Plugins Directory. Review the [plugin package](plugins/gecici-email/) and [English privacy policy](https://gecici.email/en/privacy.html) before installing.
+
 ## Connect Claude
 
 In Claude, open **Customize → Connectors → Add custom connector** and enter this remote MCP URL:
@@ -48,8 +61,8 @@ Add `https://gecici.email/mcp` to a client that supports remote Streamable HTTP 
 
 Do not put the token in third-party websites, public prompts, source control, or logs. The tools extract links but do not open them. The service does not bypass CAPTCHA or account-verification safeguards, and delivery from external senders is not guaranteed. Do not use it for sensitive accounts or real user data.
 
-Manually chosen address prefixes must contain 4–32 ASCII characters, at least one digit, and an internal `-`, `_`, or `.`. Reserved or official-looking names are unavailable. Randomly generated addresses are not subject to the manual-prefix rule. The default inbox lifetime is 60 minutes; see the [privacy and retention information](https://gecici.email/gizlilik-ve-guvenlik) for storage and deletion details.
+Manually chosen address prefixes must contain 4–32 ASCII characters, at least one digit, and an internal `-`, `_`, or `.`. Reserved or official-looking names are unavailable. Randomly generated addresses are not subject to the manual-prefix rule. The default inbox lifetime is 60 minutes; see the [privacy and retention information](https://gecici.email/en/privacy.html) for storage and deletion details.
 
 ## Repository scope and license
 
-The public source code here is limited to the `index.html` and `app.py` clients, tests, and integration documentation. The web application, API implementation, SMTP infrastructure, and other private product code are not included. The [MIT license](LICENSE) applies only to this repository's public clients and documentation, **not** to the hosted service or private code.
+The public source code here is limited to the `index.html` and `app.py` clients, Codex plugin package, tests, and integration documentation. The web application, API implementation, SMTP infrastructure, and other private product code are not included. The [MIT license](LICENSE) applies only to this repository's public clients, plugin package, and documentation, **not** to the hosted service or private code.

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gecici_email": {
+      "type": "http",
+      "url": "https://gecici.email/mcp"
+    }
+  }
+}
