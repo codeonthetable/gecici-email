@@ -1,10 +1,26 @@
-# gecici.email — ücretsiz geçici e-posta ve AI ajan bağlantısı
+# gecici.email — indirip çalıştırılabilir geçici e-posta uygulaması
 
 [Web’de kullan](https://gecici.email) · [AI ajanı/MCP rehberi](https://gecici.email/ai-ajanlar) · [REST API](https://gecici.email/api-dokuman) · [Gizlilik](https://gecici.email/gizlilik-ve-guvenlik)
 
-gecici.email, insanlara ve AI ajanlarına yetkili geliştirme ve test işlerinde kullanabilecekleri kısa ömürlü, yalnızca alıcı e-posta kutuları sunar. Hizmet ücretsizdir. Bir hesap açmak, bu depoyu klonlamak veya paket kurmak gerekmez.
+gecici.email, insanlara ve AI ajanlarına yetkili geliştirme ve test işlerinde kullanabilecekleri kısa ömürlü, yalnızca alıcı e-posta kutuları sunar. Hizmet ücretsizdir.
 
-Bu herkese açık depo **yalnızca bağlantı ve kullanım kılavuzudur**. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Bu depoya verilen lisans, gecici.email hizmetinin veya özel ürün kodunun lisansı değildir.
+## GitHub’dan indirip çalıştır
+
+Python 3.9 veya üzeri gerekir. Masaüstü penceresi Python’un Tkinter modülünü kullanır; macOS/Windows Python kurulumlarında genellikle bulunur, bazı Linux dağıtımlarında `python3-tk` ayrıca gerekir. Terminal sürümü yalnızca Python standart kütüphanesini kullanır. İnternet bağlantısı ve canlı gecici.email hizmeti gerekir.
+
+```sh
+git clone https://github.com/codeonthetable/gecici-email.git
+cd gecici-email
+python3 desktop.py
+```
+
+Windows’ta son komut `py desktop.py` olabilir. Git kurulu değilse GitHub’daki **Code → Download ZIP** ile indirin, arşivi açın ve klasörde aynı komutu çalıştırın. Pencere açılmayan sunucu/terminal ortamında `python3 app.py` kullanın. İki uygulama da kutu açar, gelen iletileri ve OTP/linkleri gösterir, süreyi uzatır ve kutuyu siler.
+
+Yeni kutunun erişim tokenı yalnızca oluşturulurken gösterilir. Uygulama tokenı diske yazmaz; daha sonra aynı kutuya dönmek için tokenı güvenli bir yerde saklayın. E-posta içindeki bağlantılar otomatik açılmaz. Uygulama yalnızca **canlı hizmete bağlanan istemcidir**; GitHub’dan indirip çevrimdışı posta sunucusu kurmazsınız.
+
+Katkı veya yerel kontrol için testler: `python3 -m unittest discover -s tests -v`. Uygulama başka servislerin CAPTCHA veya doğrulama süreçlerini aşmaz; yalnızca kendi kutunuza ulaşmış postayı gösterir.
+
+Bu depoda açık olan kaynak, yalnızca `app.py` istemcisi ve entegrasyon belgeleridir. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Depodaki MIT lisansı sadece bu açık istemci ve belgelere uygulanır; barındırılan hizmete veya özel ürün koduna uygulanmaz.
 
 ## Claude’a ekle
 
@@ -32,4 +48,4 @@ Manuel seçilen adresler 4–32 ASCII karakter, en az bir rakam ve içeride `-`,
 
 gecici.email is a free, receive-only temporary inbox service for people and AI agents in authorized development and QA workflows. Add `https://gecici.email/mcp` as a remote MCP connector, or use the [REST API](https://gecici.email/api-dokuman). Inbox creation returns an address and access token; all reads require that token. No account, source download, or unpublished npm/PyPI package is required. Do not use it for sensitive accounts or real user data. External email delivery is not guaranteed.
 
-This repository contains integration documentation only, not the product implementation. Its license does not apply to the hosted service or private source code.
+Download and run the desktop app with `python3 desktop.py` (Python 3.9+ and Tkinter), or the terminal client with `python3 app.py`. Both connect to the hosted service. This repository does not include the mail server or product implementation. The repository license applies only to these public clients and documentation, not to the hosted service or private source code.
