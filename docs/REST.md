@@ -1,22 +1,22 @@
-# REST API ile entegrasyon
+# REST integration examples
 
-Temel URL: `https://gecici.email/api/v1` · [tam API referansı](https://gecici.email/api-dokuman)
+Base URL: `https://gecici.email/api/v1` · [Full API reference (Turkish)](https://gecici.email/api-dokuman)
 
 ```sh
-# Rastgele test kutusu oluşturur; yanıtta address, token ve expiresAt bulunur.
+# Create a random test inbox. The response includes address, token, and expiresAt.
 curl -sS -X POST https://gecici.email/api/v1/inbox/generate
 
-# Kendi test akışınıza gönderilen iletileri tokenla okur.
+# Read messages sent to an inbox in your authorized test workflow.
 curl -sS -H 'Authorization: Bearer <token>' \
   'https://gecici.email/api/v1/inbox/<address>/messages'
 
-# Kod ayıklanmışsa döner; henüz yoksa başarısız/boş sonucu doğru işleyin.
+# Retrieve an extracted verification code, if one has arrived.
 curl -sS -H 'Authorization: Bearer <token>' \
   'https://gecici.email/api/v1/inbox/<address>/otp'
 ```
 
-`<address>` tam e-posta adresidir ve URL içinde kodlanmalıdır. `<token>` yalnızca kutu oluşturma yanıtından alınır; örnek değeri gerçek token değildir. Tokenı kod deposuna, herkese açık sohbetlere, istemci tarafı analitiğe veya üçüncü taraf test sitesine göndermeyin.
+Replace `<address>` with the full email address, URL-encoded as a path segment. Replace `<token>` with the token returned when that inbox was created; the placeholder is not a usable token. Do not publish the token in source control, public chats, client-side analytics, or third-party test sites.
 
-Elle ad seçmek isterseniz `POST /inbox/custom` gövdesi `{"prefix":"qa-ornek-1"}` olabilir. İsim 4–32 ASCII karakterden oluşmalı, rakam ve `-`, `_` veya `.` içermelidir; ayrılmış resmî adlar kullanılamaz. Genel kullanımda rastgele kutu daha kolaydır.
+To choose a manual prefix, send `{"prefix":"qa-example-1"}` to `POST /inbox/custom`. A manual prefix must be 4–32 ASCII characters long and include at least one digit and an internal `-`, `_`, or `.`. Reserved or official-looking names cannot be used. Random inbox creation is simpler for most workflows.
 
-Mesajın ulaşması, göndericinin davranışına ve posta akışına bağlıdır. İleti/OTP bulunmaması başarı ya da teslim kanıtı değildir. Yetkili geliştirme ve QA amaçları dışında, hassas hesaplarda veya gerçek kişilerin verilerinde kullanmayın.
+Delivery depends on the sender and the mail flow. An empty inbox or missing verification code is neither success nor proof of delivery. Use the service only for development and QA workflows you are authorized to test; avoid sensitive accounts and real user data.

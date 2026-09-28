@@ -57,7 +57,7 @@ class ClientTests(unittest.TestCase):
     def test_http_error_is_not_reported_as_success(self):
         error = HTTPError(
             "https://gecici.email/api/v1/inbox/x/otp", 408, "Not ready", {},
-            io.BytesIO('{"success":false,"error":"Henüz e-posta bulunamadı"}'.encode("utf-8")),
+            io.BytesIO('{"success":false,"error":"No email found yet"}'.encode("utf-8")),
         )
         with self.assertRaises(ApiError) as caught:
             Client(FakeOpener([error])).otp("x@gecici.email", "secret")

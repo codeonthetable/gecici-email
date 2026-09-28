@@ -1,53 +1,55 @@
-# gecici.email — indirip çalıştırılabilir geçici e-posta uygulaması
+# gecici.email — free temporary email for people and AI agents
 
-[ZIP olarak indir](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Web’de kullan](https://gecici.email) · [AI ajanı/MCP rehberi](https://gecici.email/ai-ajanlar) · [REST API](https://gecici.email/api-dokuman) · [Gizlilik](https://gecici.email/gizlilik-ve-guvenlik)
+[Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention (Turkish)](https://gecici.email/gizlilik-ve-guvenlik)
 
-gecici.email, insanlara ve AI ajanlarına yetkili geliştirme ve test işlerinde kullanabilecekleri kısa ömürlü, yalnızca alıcı e-posta kutuları sunar. Hizmet ücretsizdir.
+gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
-## GitHub’dan indirip çalıştır
+The downloadable clients and documentation in this repository are in English. Some pages on the hosted gecici.email website, including its privacy policy, are currently in Turkish.
 
-**[Uygulamayı ZIP olarak indir](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip)**, arşivi aç ve `index.html` dosyasına çift tıkla. Uygulama tarayıcıda açılır; kurulum veya Python gerekmez. İnternet bağlantısı ve canlı gecici.email hizmeti gerekir.
+## Download and run
 
-Git ile indirmek istersen:
+Download the [repository ZIP](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip), extract it, and open `index.html` in a browser. No installation or Python is required for the browser app. It needs an internet connection to the hosted gecici.email service.
+
+Alternatively, clone the repository:
 
 ```sh
 git clone https://github.com/codeonthetable/gecici-email.git
 cd gecici-email
-# index.html dosyasını tarayıcıda aç
+# Open index.html in your browser.
 ```
 
-Terminal/sunucu ortamında Python 3.9+ ile `python3 app.py` (Windows: `py app.py`) kullanabilirsin; ek Python paketi gerekmez. İki uygulama da kutu açar, gelen iletileri ve OTP/linkleri gösterir, süreyi uzatır ve kutuyu siler.
+For a terminal or server environment, run `python3 app.py` with Python 3.9 or later (on Windows, `py app.py`). It has no third-party Python dependencies. Both clients can create an inbox, read messages and verification codes or links, extend the expiry, and delete the inbox.
 
-Yeni kutunun erişim tokenı yalnızca oluşturulurken gösterilir. Uygulama tokenı diske yazmaz; daha sonra aynı kutuya dönmek için tokenı güvenli bir yerde saklayın. E-posta içindeki bağlantılar otomatik açılmaz. Uygulama yalnızca **canlı hizmete bağlanan istemcidir**; GitHub’dan indirip çevrimdışı posta sunucusu kurmazsınız. `index.html` harici kod, analitik veya reklam yüklemez.
+An inbox access token is shown when the inbox is created. The clients keep it only in memory during the current session, not on disk. Save it securely if you need to reconnect later. Email links are displayed but never opened automatically. These clients connect to the **hosted** service; downloading the repository does not install an offline mail server. The browser app loads no external scripts, analytics, or ads.
 
-Katkı veya yerel kontrol için testler: `python3 -m unittest discover -s tests -v`. Uygulama başka servislerin CAPTCHA veya doğrulama süreçlerini aşmaz; yalnızca kendi kutunuza ulaşmış postayı gösterir.
+Run the local test suite with:
 
-Bu depoda açık olan kaynak, yalnızca `index.html`/`app.py` istemcileri ve entegrasyon belgeleridir. Ürünün sunucu, web, posta altyapısı ve diğer özel kaynak kodları burada bulunmaz. Depodaki MIT lisansı sadece bu açık istemcilere ve belgelere uygulanır; barındırılan hizmete veya özel ürün koduna uygulanmaz.
+```sh
+python3 -m unittest discover -s tests -v
+```
 
-## Claude’a ekle
+## Connect Claude
 
-Claude’da **Customize → Connectors → + → Add custom connector** yolunu açıp uzak MCP adresi olarak şunu girin:
+In Claude, open **Customize → Connectors → Add custom connector** and enter this remote MCP URL:
 
 ```text
 https://gecici.email/mcp
 ```
 
-Bağlayıcıyı ilgili konuşmada etkinleştirin. Claude’un güncel menüleri ve plan erişimi için [resmî özel bağlayıcı kılavuzuna](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) bakın. Bu işlem GitHub kaynak kodunu Claude’a yüklemez.
+Enable the connector in the conversation where you need it. See [Claude's official custom connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for current menus and plan availability. Connecting Claude does not upload this repository or its source code to Claude.
 
-## Diğer AI ajanları ve geliştiriciler
+## Connect other AI agents or applications
 
-Uzak *Streamable HTTP MCP* destekleyen istemciye aynı `https://gecici.email/mcp` URL’sini ekleyin. REST isteyen istemciler `https://gecici.email/api/v1` adresini ve [REST örneklerini](docs/REST.md) kullanabilir. Çalışma akışı:
+Add `https://gecici.email/mcp` to a client that supports remote Streamable HTTP MCP. For REST clients, use `https://gecici.email/api/v1` and the [REST examples](docs/REST.md). A typical authorized test flow is:
 
-1. `gecici_create_inbox` ile kutu oluşturun; adres, erişim tokenı ve süreyi alın.
-2. Yalnızca adresi, kullanmaya yetkili olduğunuz test akışına verin.
-3. İletileri, OTP’yi veya doğrulama bağlantısını adres **ve token** ile okuyun. Boş kutu veya bulunamayan kod başarı sayılmaz.
+1. Call `gecici_create_inbox` to receive an address, access token, and expiry.
+2. Use only the address in the workflow you are authorized to test. Keep the token private.
+3. Read messages, a verification code, or a verification link with **both** the address and token. An empty inbox or missing code is not a successful delivery result.
 
-Tokenı üçüncü taraf sitelere, herkese açık istemlere veya loglara koymayın. Araç bağlantıyı çıkarır; bağlantıyı otomatik açmaz. Hizmet CAPTCHA/kimlik doğrulama atlatmaz ve dış göndericilerden e-posta teslimini garanti etmez. Hassas hesaplar veya gerçek kullanıcı verileri için kullanmayın.
+Do not put the token in third-party websites, public prompts, source control, or logs. The tools extract links but do not open them. The service does not bypass CAPTCHA or account-verification safeguards, and delivery from external senders is not guaranteed. Do not use it for sensitive accounts or real user data.
 
-Manuel seçilen adresler 4–32 ASCII karakter, en az bir rakam ve içeride `-`, `_` veya `.` gerektirir; resmî/korumalı adlar ayrı tutulur. Rastgele adres oluşturma bu koşula bağlı değildir. Varsayılan kutu ömrü 60 dakikadır. Saklama ve silme sınırları [gizlilik sayfasında](https://gecici.email/gizlilik-ve-guvenlik) açıklanır.
+Manually chosen address prefixes must contain 4–32 ASCII characters, at least one digit, and an internal `-`, `_`, or `.`. Reserved or official-looking names are unavailable. Randomly generated addresses are not subject to the manual-prefix rule. The default inbox lifetime is 60 minutes; see the [privacy and retention information](https://gecici.email/gizlilik-ve-guvenlik) for storage and deletion details.
 
-## In English
+## Repository scope and license
 
-gecici.email is a free, receive-only temporary inbox service for people and AI agents in authorized development and QA workflows. Add `https://gecici.email/mcp` as a remote MCP connector, or use the [REST API](https://gecici.email/api-dokuman). Inbox creation returns an address and access token; all reads require that token. No account, source download, or unpublished npm/PyPI package is required. Do not use it for sensitive accounts or real user data. External email delivery is not guaranteed.
-
-Download the repository ZIP and double-click `index.html` to run the browser-based app without installing anything. For a terminal, use `python3 app.py` (Python 3.9+). Both connect to the hosted service. This repository does not include the mail server or product implementation. The repository license applies only to these public clients and documentation, not to the hosted service or private source code.
+The public source code here is limited to the `index.html` and `app.py` clients, tests, and integration documentation. The web application, API implementation, SMTP infrastructure, and other private product code are not included. The [MIT license](LICENSE) applies only to this repository's public clients and documentation, **not** to the hosted service or private code.

@@ -41,9 +41,9 @@ def clean_text(value, limit=4000):
 
 def display_time(milliseconds):
     try:
-        return datetime.fromtimestamp(milliseconds / 1000).astimezone().strftime("%Y-%m-%d %H:%M")
+        return datetime.fromtimestamp(milliseconds / 1000).astimezone().strftime("%Y-%m-%d %H:%M %z")
     except (TypeError, ValueError, OverflowError, OSError):
-        return "bilinmiyor"
+        return "unknown"
 
 
 class Client:
@@ -67,15 +67,15 @@ class Client:
             status = error.code
             body = error.read(1024 * 1024)
         except (URLError, TimeoutError) as error:
-            raise ApiError(0, "Bağlantı kurulamadı: " + str(error.reason if isinstance(error, URLError) else error)) from error
+            raise ApiError(0, "Connection failed: " + str(error.reason if isinstance(error, URLError) else error)) from error
         try:
             result = json.loads(body)
         except (UnicodeDecodeError, ValueError) as error:
-            raise ApiError(status, "Sunucu geçerli JSON döndürmedi") from error
+            raise ApiError(status, "The server did not return valid JSON") from error
         if not isinstance(result, dict):
-            raise ApiError(status, "Sunucu beklenmeyen yanıt döndürdü")
+            raise ApiError(status, "The server returned an unexpected response")
         if status < 200 or status >= 300 or result.get("success") is False:
-            message = clean_text(result.get("error") or "İstek başarısız", 300)
+            message = clean_text(result.get("error") or "Request failed", 300)
             raise ApiError(status, message)
         return result
 
@@ -86,7 +86,7 @@ class Client:
             result = self.request("POST", "/inbox/custom", payload={"prefix": prefix})
         inbox = result.get("inbox")
         if not isinstance(inbox, dict) or not inbox.get("address") or not inbox.get("token"):
-            raise ApiError(0, "Kutu oluşturma yanıtında adres veya token yok")
+            raise ApiError(0, "The inbox creation response has no address or token")
         return inbox
 
     def inbox_path(self, address):
@@ -113,61 +113,61 @@ class Client:
 
 def show_messages(result):
     messages = result.get("messages") or []
-    print("\nİleti sayısı:", len(messages))
+    print("\nMessage count:", len(messages))
     for index, message in enumerate(messages, 1):
         sender = message.get("from") or {}
         if not isinstance(sender, dict):
             sender = {}
-        print("\n--- İleti", index, "---")
-        print("Kimden:", clean_text(sender.get("address"), 200))
-        print("Konu:", clean_text(message.get("subject"), 300))
-        print("Tarih:", display_time(message.get("receivedAt")))
-        print("Metin:\n" + (clean_text(message.get("text")) or "(Düz metin yok)"))
+        print("\n--- Message", index, "---")
+        print("From:", clean_text(sender.get("address"), 200))
+        print("Subject:", clean_text(message.get("subject"), 300))
+        print("Received:", display_time(message.get("receivedAt")))
+        print("Text:\n" + (clean_text(message.get("text")) or "(No plain-text content)"))
     if not messages:
-        print("Henüz e-posta gelmedi. Boş kutu teslimat kanıtı değildir.")
+        print("No email has arrived. An empty inbox is not proof of delivery.")
 
 
 def main():
-    print("gecici.email — terminal uygulaması")
-    print("Ücretsiz, yalnızca alıcı kutu. Token bu oturumda bellekte tutulur; dosyaya yazılmaz.")
-    print("Yetkili testler için kullanın; hassas hesap veya gerçek kişilerin verileri için kullanmayın.")
+    print("gecici.email — terminal client")
+    print("Free, receive-only inboxes. Your token stays in memory for this session; it is not saved to disk.")
+    print("Use only for authorized testing. Avoid sensitive accounts and real user data.")
     client = Client()
     address = None
     token = None
 
     while True:
-        print("\nAktif kutu:", address or "yok")
-        print("1 Rastgele kutu aç  2 Özel adres aç  3 Mevcut kutuya bağlan")
-        print("4 İletileri yenile   5 OTP göster      6 Doğrulama linkini göster")
-        print("7 Süre uzat         8 Kutuyu sil       0 Çıkış")
+        print("\nActive inbox:", address or "none")
+        print("1 Create random inbox   2 Create custom inbox   3 Connect to an existing inbox")
+        print("4 Refresh messages      5 Show OTP              6 Show verification link")
+        print("7 Extend expiry         8 Delete inbox          0 Exit")
         try:
-            choice = input("Seçim: ").strip()
+            choice = input("Choose an option: ").strip()
         except (EOFError, KeyboardInterrupt):
-            print("\nÇıkılıyor.")
+            print("\nExiting.")
             return 0
 
         try:
             if choice == "0":
                 return 0
             if choice in ("1", "2"):
-                prefix = input("Adres adı (rakam ve -/_/. gerekli): ").strip() if choice == "2" else None
+                prefix = input("Address prefix (must include a digit and -/_/.): ").strip() if choice == "2" else None
                 inbox = client.create(prefix)
                 address, token = inbox["address"], inbox["token"]
-                print("\nAdres:", address)
-                print("Erişim tokenı (gizli tutun, bu oturumdan sonra kurtarılamaz):", token)
-                print("Bitiş:", display_time(inbox.get("expiresAt")))
+                print("\nAddress:", address)
+                print("Access token (keep private; it cannot be retrieved after this session):", token)
+                print("Expires:", display_time(inbox.get("expiresAt")))
             elif choice == "3":
-                candidate_address = input("Tam e-posta adresi: ").strip().lower()
-                candidate_token = getpass.getpass("Erişim tokenı: ").strip()
+                candidate_address = input("Full email address: ").strip().lower()
+                candidate_token = getpass.getpass("Access token: ").strip()
                 if not candidate_address or not candidate_token:
-                    print("Adres ve token zorunlu.")
+                    print("Both address and token are required.")
                     continue
                 info = client.info(candidate_address, candidate_token)
                 address, token = candidate_address, candidate_token
-                print("Bağlandı. Bitiş:", display_time(info.get("expiresAt")))
+                print("Connected. Expires:", display_time(info.get("expiresAt")))
             elif choice in ("4", "5", "6", "7", "8"):
                 if not address or not token:
-                    print("Önce kutu açın veya mevcut kutuya bağlanın.")
+                    print("Create an inbox or connect to an existing one first.")
                     continue
                 if choice == "4":
                     show_messages(client.messages(address, token))
@@ -176,29 +176,29 @@ def main():
                     print("OTP:", clean_text(result.get("otp"), 100))
                 elif choice == "6":
                     result = client.links(address, token)
-                    print("Bağlantı (otomatik açılmaz):", clean_text(result.get("verificationLink"), 2000))
+                    print("Link (never opened automatically):", clean_text(result.get("verificationLink"), 2000))
                 elif choice == "7":
-                    raw = input("Kaç dakika eklensin? (1-60): ").strip()
+                    raw = input("Minutes to add (1-60): ").strip()
                     if not raw.isdecimal() or not 1 <= int(raw) <= 60:
-                        print("1-60 arası tam sayı girin.")
+                        print("Enter a whole number from 1 to 60.")
                         continue
                     result = client.extend(address, token, int(raw))
-                    print("Yeni bitiş:", display_time(result.get("inbox", {}).get("expiresAt")))
+                    print("New expiry:", display_time(result.get("inbox", {}).get("expiresAt")))
                 elif choice == "8":
-                    if input("Kutuyu kalıcı olarak silmek için 'sil' yazın: ").strip() != "sil":
-                        print("Silme iptal edildi.")
+                    if input("Type 'delete' to permanently delete this inbox: ").strip() != "delete":
+                        print("Deletion canceled.")
                         continue
                     client.delete(address, token)
                     address, token = None, None
-                    print("Kutu silindi.")
+                    print("Inbox deleted.")
             else:
-                print("Geçersiz seçim.")
+                print("Invalid option.")
         except ApiError as error:
-            print("İşlem başarısız (HTTP {}): {}".format(error.status or "ağ", error))
+            print("Operation failed (HTTP {}): {}".format(error.status or "network", error))
             if error.status == 408:
-                print("Henüz OTP veya bağlantı gelmemiş olabilir; bu başarı anlamına gelmez.")
+                print("No OTP or link may have arrived yet; this is not a successful result.")
         except (EOFError, KeyboardInterrupt):
-            print("\nİşlem iptal edildi.")
+            print("\nOperation canceled.")
 
 
 if __name__ == "__main__":

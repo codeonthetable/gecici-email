@@ -33,6 +33,8 @@ class HtmlTests(unittest.TestCase):
         self.assertFalse(parser.unsafe_external_assets)
         self.assertEqual(len(parser.scripts), 1)
         self.assertIn("connect-src https://gecici.email", html)
+        self.assertIn('<html lang="en">', html)
+        self.assertIn('Temporary Inbox</title>', html)
         self.assertNotIn(".innerHTML", html)
         for element_id in (
             "createRandom", "createCustom", "connect", "refresh", "otp", "link",

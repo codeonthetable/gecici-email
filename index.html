@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://gecici.email; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; object-src 'none'">
-  <title>gecici.email — Gelen Kutusu</title>
+  <title>gecici.email — Temporary Inbox</title>
   <style>
     :root { color-scheme: dark; font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0b1019; color: #e9eef7; }
     * { box-sizing: border-box; }
@@ -50,65 +50,65 @@
 </head>
 <body>
 <main>
-  <div class="eyebrow">GitHub’dan indirilen yerel istemci</div>
-  <h1>Gelen kutun hazır.</h1>
-  <p class="intro">Ücretsiz, kısa ömürlü ve yalnızca e-posta alan kutu. Bu dosya bilgisayarınızda açılır; iletiler için <a href="https://gecici.email" target="_blank" rel="noopener noreferrer">gecici.email</a> hizmetine HTTPS ile bağlanır.</p>
+  <div class="eyebrow">Downloadable GitHub client</div>
+  <h1>Your temporary inbox.</h1>
+  <p class="intro">Free, short-lived, receive-only email inboxes. This file runs in your browser and connects to the hosted <a href="https://gecici.email" target="_blank" rel="noopener noreferrer">gecici.email</a> service over HTTPS.</p>
 
-  <div id="status" class="status" role="status" aria-live="polite">Rastgele bir kutu oluşturun veya mevcut adres ve tokenınızla bağlanın.</div>
+  <div id="status" class="status" role="status" aria-live="polite">Create a random inbox or connect with an existing address and token.</div>
 
   <div class="grid">
     <section class="card">
-      <h2>Yeni kutu oluştur</h2>
-      <button class="primary" id="createRandom">Rastgele adres oluştur</button>
+      <h2>Create an inbox</h2>
+      <button class="primary" id="createRandom">Generate a random address</button>
       <div class="divider"></div>
-      <label for="prefix">İsteğe bağlı özel adres adı</label>
+      <label for="prefix">Optional custom address prefix</label>
       <div class="row">
-        <input id="prefix" maxlength="32" placeholder="ornek-123" autocomplete="off" spellcheck="false">
-        <button id="createCustom">Özel adres aç</button>
+        <input id="prefix" maxlength="32" placeholder="example-123" autocomplete="off" spellcheck="false">
+        <button id="createCustom">Create custom address</button>
       </div>
-      <p class="muted">4–32 ASCII karakter; rakam ve içeride -, _ veya . gerekir. Resmî ve korumalı adlar kullanılamaz.</p>
+      <p class="muted">Use 4–32 ASCII characters, including a digit and an internal -, _, or . Reserved names are unavailable.</p>
     </section>
 
     <section class="card">
-      <h2>Mevcut kutuya bağlan</h2>
-      <label for="existingAddress">Tam e-posta adresi</label>
-      <input id="existingAddress" type="email" placeholder="ornek-123@gecici.email" autocomplete="off" spellcheck="false">
-      <label for="existingToken">Erişim tokenı</label>
-      <input id="existingToken" type="password" placeholder="Kutu oluşturulurken verilen token" autocomplete="off" spellcheck="false">
-      <div class="actions"><button id="connect">Bağlan</button></div>
-      <p class="muted">Token yalnızca bu açık sekmenin belleğinde tutulur; bu uygulama diske kaydetmez.</p>
+      <h2>Connect to an existing inbox</h2>
+      <label for="existingAddress">Full email address</label>
+      <input id="existingAddress" type="email" placeholder="example-123@gecici.email" autocomplete="off" spellcheck="false">
+      <label for="existingToken">Access token</label>
+      <input id="existingToken" type="password" placeholder="Token returned when the inbox was created" autocomplete="off" spellcheck="false">
+      <div class="actions"><button id="connect">Connect</button></div>
+      <p class="muted">The token stays in this tab's memory only; this client does not save it to disk.</p>
     </section>
 
     <section id="inbox" class="card wide" hidden>
-      <div class="eyebrow">Aktif gelen kutusu</div>
+      <div class="eyebrow">Active inbox</div>
       <div class="row">
         <div id="address" class="address"></div>
-        <button id="copyAddress">Adresi kopyala</button>
+        <button id="copyAddress">Copy address</button>
       </div>
       <div id="expiry" class="muted"></div>
       <div id="newTokenBox" class="token-box" hidden>
-        <label for="newToken">Yeni kutunun tokenı — gizli tutun; sayfa kapanınca yeniden gösterilmez</label>
+        <label for="newToken">New inbox token — keep it private; it cannot be retrieved after this page closes</label>
         <div class="row">
           <input id="newToken" type="text" readonly spellcheck="false">
-          <button id="copyToken">Tokenı kopyala</button>
+          <button id="copyToken">Copy token</button>
         </div>
       </div>
       <div class="actions">
-        <button class="primary" id="refresh">İletileri yenile</button>
-        <button id="otp">OTP göster</button>
-        <button id="link">Doğrulama linki</button>
-        <button id="extend">30 dakika uzat</button>
-        <button class="danger" id="delete">Kutuyu sil</button>
+        <button class="primary" id="refresh">Refresh messages</button>
+        <button id="otp">Show verification code</button>
+        <button id="link">Show verification link</button>
+        <button id="extend">Extend by 30 minutes</button>
+        <button class="danger" id="delete">Delete inbox</button>
       </div>
-      <p class="muted">Açık sekmede 15 saniyede bir yenilenir. Boş kutu teslimat kanıtı değildir; doğrulama bağlantısı otomatik açılmaz.</p>
+      <p class="muted">Refreshes every 15 seconds while this tab is open. An empty inbox is not proof of delivery; verification links are never opened automatically.</p>
       <div class="messages">
-        <div id="messageList" aria-label="Gelen iletiler"></div>
-        <div id="preview">Henüz ileti seçilmedi.</div>
+        <div id="messageList" aria-label="Received messages"></div>
+        <div id="preview">No message selected.</div>
       </div>
     </section>
   </div>
 
-  <footer>Yalnızca yetkili geliştirme ve test için. Hassas hesaplarda veya gerçek kişilerin verileriyle kullanmayın. Harici e-posta teslimi garanti edilmez. <a href="https://gecici.email/gizlilik-ve-guvenlik" target="_blank" rel="noopener noreferrer">Gizlilik ve saklama bilgileri</a>.</footer>
+  <footer>For authorized development and testing only. Do not use for sensitive accounts or real user data. Delivery from external senders is not guaranteed. Read the <a href="https://gecici.email/gizlilik-ve-guvenlik" target="_blank" rel="noopener noreferrer">privacy and retention information (Turkish)</a>.</footer>
 </main>
 <script>
 (() => {
@@ -148,43 +148,43 @@
   }
 
   function path(address) { return `/inbox/${encodeURIComponent(address)}`; }
-  function time(value) { return value ? new Date(value).toLocaleString('tr-TR') : 'bilinmiyor'; }
+  function time(value) { return value ? new Date(value).toISOString() : 'unknown'; }
 
   function showInbox(inbox, showToken) {
     current = { address: inbox.address, token: inbox.token };
     byId('inbox').hidden = false;
     byId('address').textContent = inbox.address;
-    byId('expiry').textContent = `Bitiş: ${time(inbox.expiresAt)}`;
+    byId('expiry').textContent = `Expires (UTC): ${time(inbox.expiresAt)}`;
     byId('newTokenBox').hidden = !showToken;
     byId('newToken').value = showToken ? inbox.token : '';
     byId('existingToken').value = '';
     byId('messageList').replaceChildren();
-    byId('preview').textContent = 'Henüz ileti seçilmedi.';
-    status(`Aktif kutu: ${inbox.address}`);
+    byId('preview').textContent = 'No message selected.';
+    status(`Active inbox: ${inbox.address}`);
     refresh();
   }
 
   async function create(prefix) {
     try {
-      status('Kutu oluşturuluyor…');
+      status('Creating inbox…');
       const result = prefix === null
         ? await api('POST', '/inbox/generate')
         : await api('POST', '/inbox/custom', null, { prefix });
-      if (!result.inbox?.address || !result.inbox?.token) throw new Error('Sunucu adres veya token döndürmedi.');
+      if (!result.inbox?.address || !result.inbox?.token) throw new Error('The server did not return an address or token.');
       showInbox(result.inbox, true);
-    } catch (error) { status(`Kutu oluşturulamadı: ${error.message}`, true); }
+    } catch (error) { status(`Could not create inbox: ${error.message}`, true); }
   }
 
   async function connect() {
     const address = byId('existingAddress').value.trim().toLowerCase();
     const token = byId('existingToken').value.trim();
-    if (!address || !token) return status('Adres ve token gerekli.', true);
+    if (!address || !token) return status('Both address and token are required.', true);
     try {
-      status('Kutu doğrulanıyor…');
+      status('Checking inbox…');
       const result = await api('GET', path(address), token);
-      if (!result.inbox) throw new Error('Kutu bilgisi bulunamadı.');
+      if (!result.inbox) throw new Error('Inbox details were not found.');
       showInbox({ ...result.inbox, token }, false);
-    } catch (error) { status(`Bağlanılamadı: ${error.message}`, true); }
+    } catch (error) { status(`Could not connect: ${error.message}`, true); }
   }
 
   async function refresh() {
@@ -200,19 +200,19 @@
       if (!messages.length) {
         const empty = document.createElement('p');
         empty.className = 'muted';
-        empty.textContent = 'Henüz ileti yok.';
+        empty.textContent = 'No messages yet.';
         list.append(empty);
       }
       for (const message of messages) {
         const button = document.createElement('button');
-        button.textContent = `${message.subject || '(Konu yok)'} — ${message.from?.address || 'Bilinmeyen'}`;
+        button.textContent = `${message.subject || '(No subject)'} — ${message.from?.address || 'Unknown sender'}`;
         button.addEventListener('click', () => {
-          byId('preview').textContent = `Kimden: ${message.from?.address || 'Bilinmeyen'}\nKonu: ${message.subject || ''}\nTarih: ${time(message.receivedAt)}\n\n${message.text || '(Düz metin yok)'}`;
+          byId('preview').textContent = `From: ${message.from?.address || 'Unknown sender'}\nSubject: ${message.subject || ''}\nReceived (UTC): ${time(message.receivedAt)}\n\n${message.text || '(No plain-text content)'}`;
         });
         list.append(button);
       }
-      status(`${active.address} • ${messages.length} ileti`);
-    } catch (error) { status(`İletiler okunamadı: ${error.message}`, true); }
+      status(`${active.address} • ${messages.length} messages`);
+    } catch (error) { status(`Could not read messages: ${error.message}`, true); }
     finally { refreshing = false; }
   }
 
@@ -223,11 +223,13 @@
       const result = await api('GET', path(active.address) + '/' + kind, active.token);
       if (current !== active) return;
       byId('preview').textContent = kind === 'otp'
-        ? `OTP: ${result.otp || 'bulunamadı'}\nKonu: ${result.subject || ''}`
-        : `Doğrulama bağlantısı (otomatik açılmaz):\n${result.verificationLink || 'bulunamadı'}`;
-      status(kind === 'otp' ? 'OTP bulundu.' : 'Doğrulama bağlantısı bulundu.');
+        ? `Verification code: ${result.otp || 'not found'}\nSubject: ${result.subject || ''}`
+        : `Verification link (never opened automatically):\n${result.verificationLink || 'not found'}`;
+      status((kind === 'otp' ? result.otp : result.verificationLink)
+        ? (kind === 'otp' ? 'Verification code found.' : 'Verification link found.')
+        : 'Nothing found yet; this is not a successful delivery result.');
     } catch (error) {
-      status(error.status === 408 ? 'Henüz OTP/link gelmedi; bu başarı anlamına gelmez.' : `Sorgu başarısız: ${error.message}`, true);
+      status(error.status === 408 ? 'No code or link has arrived yet; this is not a successful delivery result.' : `Request failed: ${error.message}`, true);
     }
   }
 
@@ -235,28 +237,28 @@
     if (!current) return;
     try {
       const result = await api('POST', path(current.address) + '/extend', current.token, { minutes: 30 });
-      byId('expiry').textContent = `Bitiş: ${time(result.inbox?.expiresAt)}`;
-      status('Kutu süresi 30 dakika uzatıldı.');
-    } catch (error) { status(`Süre uzatılamadı: ${error.message}`, true); }
+      byId('expiry').textContent = `Expires (UTC): ${time(result.inbox?.expiresAt)}`;
+      status('Inbox expiry extended by 30 minutes.');
+    } catch (error) { status(`Could not extend inbox expiry: ${error.message}`, true); }
   }
 
   async function deleteInbox() {
-    if (!current || !window.confirm(`${current.address} kutusunu silmek istiyor musunuz?`)) return;
+    if (!current || !window.confirm(`Delete inbox ${current.address}? This cannot be undone.`)) return;
     try {
       await api('DELETE', path(current.address), current.token);
       current = null;
       byId('newToken').value = '';
       byId('inbox').hidden = true;
-      status('Kutu silindi.');
-    } catch (error) { status(`Kutu silinemedi: ${error.message}`, true); }
+      status('Inbox deleted.');
+    } catch (error) { status(`Could not delete inbox: ${error.message}`, true); }
   }
 
   async function copy(value) {
     try {
       await navigator.clipboard.writeText(value);
-      status('Panoya kopyalandı; token kopyaladıysanız panoyu daha sonra temizleyin.');
+      status('Copied to clipboard. If you copied a token, clear the clipboard afterward.');
     } catch {
-      status('Otomatik kopyalama engellendi; metni seçip elle kopyalayın.', true);
+      status('Automatic copying was blocked. Select and copy the text manually.', true);
     }
   }
 
