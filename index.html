@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https://gecici.email; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>gecici.email — Gelen Kutusu</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0b1019; color: #e9eef7; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 85% 0, #17334a 0, transparent 32rem), #0b1019; }
+    main { max-width: 1060px; margin: 0 auto; padding: 38px 20px 70px; }
+    h1 { font-size: clamp(2.1rem, 5vw, 3.3rem); line-height: 1.1; margin: 8px 0 12px; letter-spacing: -.04em; }
+    h2 { font-size: 1.08rem; margin: 0 0 18px; }
+    p { color: #aebed0; }
+    a { color: #72ddbb; }
+    .eyebrow { color: #72ddbb; font-size: .75rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .intro { max-width: 710px; margin-bottom: 30px; }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 18px; }
+    .card { background: #121b28; border: 1px solid #2b3b4c; border-radius: 18px; padding: 22px; box-shadow: 0 18px 40px #0002; }
+    .wide { grid-column: 1 / -1; }
+    label { display: block; color: #c9d7e6; font-size: .83rem; font-weight: 700; margin: 12px 0 6px; }
+    input { width: 100%; border: 1px solid #405368; border-radius: 10px; padding: 12px 13px; color: #f5f8fc; background: #0b131e; font: inherit; min-width: 0; }
+    input:focus, button:focus-visible { outline: 2px solid #65ddba; outline-offset: 2px; }
+    button { border: 1px solid #405368; border-radius: 10px; padding: 11px 14px; color: #eef5fa; background: #233145; font: inherit; font-weight: 700; cursor: pointer; }
+    button:hover { background: #31465f; }
+    button:disabled { opacity: .5; cursor: wait; }
+    .primary { background: #72ddbb; color: #07251d; border-color: #72ddbb; }
+    .primary:hover { background: #a3eed3; }
+    .danger { color: #ffd2d2; border-color: #80515d; background: #39242d; }
+    .row { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+    .row > input { flex: 1 1 200px; }
+    .muted { color: #96a9bb; font-size: .82rem; }
+    .divider { height: 1px; background: #2b3b4c; margin: 20px 0; }
+    .status { border: 1px solid #355b55; border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; background: #112b2a; color: #b8f3df; }
+    .status.error { border-color: #8d5259; background: #351f29; color: #ffd6d6; }
+    .address { font-size: 1.35rem; font-weight: 800; overflow-wrap: anywhere; margin: 0 0 8px; }
+    .token-box { margin-top: 16px; padding: 14px; border: 1px solid #506950; border-radius: 12px; background: #172b23; }
+    .token-box input { font: .82rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 17px 0; }
+    .messages { display: grid; grid-template-columns: minmax(190px, .38fr) minmax(0, .62fr); gap: 14px; min-height: 230px; }
+    #messageList { display: grid; align-content: start; gap: 8px; }
+    #messageList button { text-align: left; overflow-wrap: anywhere; font-weight: 500; }
+    #preview { background: #0c1420; border: 1px solid #2b3b4c; border-radius: 12px; padding: 16px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 410px; overflow: auto; }
+    [hidden] { display: none !important; }
+    footer { padding-top: 24px; font-size: .85rem; color: #92a7b9; }
+    @media (max-width: 750px) { .grid, .messages { grid-template-columns: 1fr; } .wide { grid-column: 1; } }
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">GitHub’dan indirilen yerel istemci</div>
+  <h1>Gelen kutun hazır.</h1>
+  <p class="intro">Ücretsiz, kısa ömürlü ve yalnızca e-posta alan kutu. Bu dosya bilgisayarınızda açılır; iletiler için <a href="https://gecici.email" target="_blank" rel="noopener noreferrer">gecici.email</a> hizmetine HTTPS ile bağlanır.</p>
+
+  <div id="status" class="status" role="status" aria-live="polite">Rastgele bir kutu oluşturun veya mevcut adres ve tokenınızla bağlanın.</div>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Yeni kutu oluştur</h2>
+      <button class="primary" id="createRandom">Rastgele adres oluştur</button>
+      <div class="divider"></div>
+      <label for="prefix">İsteğe bağlı özel adres adı</label>
+      <div class="row">
+        <input id="prefix" maxlength="32" placeholder="ornek-123" autocomplete="off" spellcheck="false">
+        <button id="createCustom">Özel adres aç</button>
+      </div>
+      <p class="muted">4–32 ASCII karakter; rakam ve içeride -, _ veya . gerekir. Resmî ve korumalı adlar kullanılamaz.</p>
+    </section>
+
+    <section class="card">
+      <h2>Mevcut kutuya bağlan</h2>
+      <label for="existingAddress">Tam e-posta adresi</label>
+      <input id="existingAddress" type="email" placeholder="ornek-123@gecici.email" autocomplete="off" spellcheck="false">
+      <label for="existingToken">Erişim tokenı</label>
+      <input id="existingToken" type="password" placeholder="Kutu oluşturulurken verilen token" autocomplete="off" spellcheck="false">
+      <div class="actions"><button id="connect">Bağlan</button></div>
+      <p class="muted">Token yalnızca bu açık sekmenin belleğinde tutulur; bu uygulama diske kaydetmez.</p>
+    </section>
+
+    <section id="inbox" class="card wide" hidden>
+      <div class="eyebrow">Aktif gelen kutusu</div>
+      <div class="row">
+        <div id="address" class="address"></div>
+        <button id="copyAddress">Adresi kopyala</button>
+      </div>
+      <div id="expiry" class="muted"></div>
+      <div id="newTokenBox" class="token-box" hidden>
+        <label for="newToken">Yeni kutunun tokenı — gizli tutun; sayfa kapanınca yeniden gösterilmez</label>
+        <div class="row">
+          <input id="newToken" type="text" readonly spellcheck="false">
+          <button id="copyToken">Tokenı kopyala</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="refresh">İletileri yenile</button>
+        <button id="otp">OTP göster</button>
+        <button id="link">Doğrulama linki</button>
+        <button id="extend">30 dakika uzat</button>
+        <button class="danger" id="delete">Kutuyu sil</button>
+      </div>
+      <p class="muted">Açık sekmede 15 saniyede bir yenilenir. Boş kutu teslimat kanıtı değildir; doğrulama bağlantısı otomatik açılmaz.</p>
+      <div class="messages">
+        <div id="messageList" aria-label="Gelen iletiler"></div>
+        <div id="preview">Henüz ileti seçilmedi.</div>
+      </div>
+    </section>
+  </div>
+
+  <footer>Yalnızca yetkili geliştirme ve test için. Hassas hesaplarda veya gerçek kişilerin verileriyle kullanmayın. Harici e-posta teslimi garanti edilmez. <a href="https://gecici.email/gizlilik-ve-guvenlik" target="_blank" rel="noopener noreferrer">Gizlilik ve saklama bilgileri</a>.</footer>
+</main>
+<script>
+(() => {
+  'use strict';
+  const base = 'https://gecici.email/api/v1';
+  const byId = id => document.getElementById(id);
+  let current = null;
+  let refreshing = false;
+
+  function status(message, error = false) {
+    const element = byId('status');
+    element.textContent = message;
+    element.classList.toggle('error', error);
+  }
+
+  async function api(method, path, token, payload) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const headers = { Accept: 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    if (payload !== undefined) headers['Content-Type'] = 'application/json';
+    try {
+      const response = await fetch(base + path, {
+        method, headers, body: payload === undefined ? undefined : JSON.stringify(payload),
+        mode: 'cors', credentials: 'omit', redirect: 'error', signal: controller.signal
+      });
+      const data = await response.json();
+      if (!response.ok || data.success === false) {
+        const failure = new Error(data.error || `HTTP ${response.status}`);
+        failure.status = response.status;
+        throw failure;
+      }
+      return data;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  function path(address) { return `/inbox/${encodeURIComponent(address)}`; }
+  function time(value) { return value ? new Date(value).toLocaleString('tr-TR') : 'bilinmiyor'; }
+
+  function showInbox(inbox, showToken) {
+    current = { address: inbox.address, token: inbox.token };
+    byId('inbox').hidden = false;
+    byId('address').textContent = inbox.address;
+    byId('expiry').textContent = `Bitiş: ${time(inbox.expiresAt)}`;
+    byId('newTokenBox').hidden = !showToken;
+    byId('newToken').value = showToken ? inbox.token : '';
+    byId('existingToken').value = '';
+    byId('messageList').replaceChildren();
+    byId('preview').textContent = 'Henüz ileti seçilmedi.';
+    status(`Aktif kutu: ${inbox.address}`);
+    refresh();
+  }
+
+  async function create(prefix) {
+    try {
+      status('Kutu oluşturuluyor…');
+      const result = prefix === null
+        ? await api('POST', '/inbox/generate')
+        : await api('POST', '/inbox/custom', null, { prefix });
+      if (!result.inbox?.address || !result.inbox?.token) throw new Error('Sunucu adres veya token döndürmedi.');
+      showInbox(result.inbox, true);
+    } catch (error) { status(`Kutu oluşturulamadı: ${error.message}`, true); }
+  }
+
+  async function connect() {
+    const address = byId('existingAddress').value.trim().toLowerCase();
+    const token = byId('existingToken').value.trim();
+    if (!address || !token) return status('Adres ve token gerekli.', true);
+    try {
+      status('Kutu doğrulanıyor…');
+      const result = await api('GET', path(address), token);
+      if (!result.inbox) throw new Error('Kutu bilgisi bulunamadı.');
+      showInbox({ ...result.inbox, token }, false);
+    } catch (error) { status(`Bağlanılamadı: ${error.message}`, true); }
+  }
+
+  async function refresh() {
+    if (!current || refreshing) return;
+    refreshing = true;
+    const active = current;
+    try {
+      const result = await api('GET', path(active.address) + '/messages', active.token);
+      if (current !== active) return;
+      const list = byId('messageList');
+      list.replaceChildren();
+      const messages = Array.isArray(result.messages) ? result.messages : [];
+      if (!messages.length) {
+        const empty = document.createElement('p');
+        empty.className = 'muted';
+        empty.textContent = 'Henüz ileti yok.';
+        list.append(empty);
+      }
+      for (const message of messages) {
+        const button = document.createElement('button');
+        button.textContent = `${message.subject || '(Konu yok)'} — ${message.from?.address || 'Bilinmeyen'}`;
+        button.addEventListener('click', () => {
+          byId('preview').textContent = `Kimden: ${message.from?.address || 'Bilinmeyen'}\nKonu: ${message.subject || ''}\nTarih: ${time(message.receivedAt)}\n\n${message.text || '(Düz metin yok)'}`;
+        });
+        list.append(button);
+      }
+      status(`${active.address} • ${messages.length} ileti`);
+    } catch (error) { status(`İletiler okunamadı: ${error.message}`, true); }
+    finally { refreshing = false; }
+  }
+
+  async function inspect(kind) {
+    if (!current) return;
+    const active = current;
+    try {
+      const result = await api('GET', path(active.address) + '/' + kind, active.token);
+      if (current !== active) return;
+      byId('preview').textContent = kind === 'otp'
+        ? `OTP: ${result.otp || 'bulunamadı'}\nKonu: ${result.subject || ''}`
+        : `Doğrulama bağlantısı (otomatik açılmaz):\n${result.verificationLink || 'bulunamadı'}`;
+      status(kind === 'otp' ? 'OTP bulundu.' : 'Doğrulama bağlantısı bulundu.');
+    } catch (error) {
+      status(error.status === 408 ? 'Henüz OTP/link gelmedi; bu başarı anlamına gelmez.' : `Sorgu başarısız: ${error.message}`, true);
+    }
+  }
+
+  async function extend() {
+    if (!current) return;
+    try {
+      const result = await api('POST', path(current.address) + '/extend', current.token, { minutes: 30 });
+      byId('expiry').textContent = `Bitiş: ${time(result.inbox?.expiresAt)}`;
+      status('Kutu süresi 30 dakika uzatıldı.');
+    } catch (error) { status(`Süre uzatılamadı: ${error.message}`, true); }
+  }
+
+  async function deleteInbox() {
+    if (!current || !window.confirm(`${current.address} kutusunu silmek istiyor musunuz?`)) return;
+    try {
+      await api('DELETE', path(current.address), current.token);
+      current = null;
+      byId('newToken').value = '';
+      byId('inbox').hidden = true;
+      status('Kutu silindi.');
+    } catch (error) { status(`Kutu silinemedi: ${error.message}`, true); }
+  }
+
+  async function copy(value) {
+    try {
+      await navigator.clipboard.writeText(value);
+      status('Panoya kopyalandı; token kopyaladıysanız panoyu daha sonra temizleyin.');
+    } catch {
+      status('Otomatik kopyalama engellendi; metni seçip elle kopyalayın.', true);
+    }
+  }
+
+  byId('createRandom').addEventListener('click', () => create(null));
+  byId('createCustom').addEventListener('click', () => create(byId('prefix').value.trim()));
+  byId('connect').addEventListener('click', connect);
+  byId('refresh').addEventListener('click', refresh);
+  byId('otp').addEventListener('click', () => inspect('otp'));
+  byId('link').addEventListener('click', () => inspect('links'));
+  byId('extend').addEventListener('click', extend);
+  byId('delete').addEventListener('click', deleteInbox);
+  byId('copyAddress').addEventListener('click', () => current && copy(current.address));
+  byId('copyToken').addEventListener('click', () => current && copy(current.token));
+  setInterval(() => {
+    if (current && document.visibilityState === 'visible') refresh();
+  }, 15000);
+})();
+</script>
+</body>
+</html>
