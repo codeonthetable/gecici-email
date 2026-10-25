@@ -14,6 +14,7 @@ The downloadable clients and documentation in this repository are in English. Th
 | Use an inbox without installing anything | [Hosted web inbox](https://gecici.email/en/) |
 | Integrate a script or test runner | [English API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
 | Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html) |
+| Add inbox and verification-code tools to browser-use | [Tested tool setup and API simulation](docs/BROWSER_USE.md) |
 
 Türkçe: [Geçici mail](https://gecici.email/) · [Chrome eklentisi](https://gecici.email/chrome-eklentisi) · [API rehberi](https://gecici.email/api-dokuman)
 
