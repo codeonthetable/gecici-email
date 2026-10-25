@@ -1,10 +1,33 @@
 # gecici.email — free temporary email for people and AI agents
 
-[Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
+[Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
 
 gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
 The downloadable clients and documentation in this repository are in English. The hosted site has an [English inbox and guide](https://gecici.email/en/) as well as Turkish pages.
+
+## Choose how to use it
+
+| Your workflow | Start here |
+| --- | --- |
+| Keep a temporary inbox in the Chrome toolbar | [Chrome extension and installation guide](https://gecici.email/en/chrome-extension.html) |
+| Use an inbox without installing anything | [Hosted web inbox](https://gecici.email/en/) |
+| Integrate a script or test runner | [English API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
+| Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html) |
+
+Türkçe: [Geçici mail](https://gecici.email/) · [Chrome eklentisi](https://gecici.email/chrome-eklentisi) · [API rehberi](https://gecici.email/api-dokuman)
+
+## Try a complete REST and MCP QA flow
+
+After downloading or cloning this repository, review [`examples/qa-flow.py`](examples/qa-flow.py) and run:
+
+```sh
+python3 examples/qa-flow.py --run
+```
+
+It uses the Python standard library and the live hosted service. It creates one disposable inbox, checks that a wrong token is rejected, inserts a fictional message through the simulation API, checks code extraction and an MCP message read, then deletes its inbox. It prints result flags without printing addresses, tokens, messages, or codes. Requests are tagged `qa-test` so they are not counted as normal product usage.
+
+**This is an API integration test. It does not test external email delivery or create an account on another website.** Keep the address and token in memory when adapting it to your own application; replace the simulation step with your own authorized application flow.
 
 ## Download and run
 
