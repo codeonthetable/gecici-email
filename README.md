@@ -90,3 +90,7 @@ Manually chosen address prefixes must contain 4–32 ASCII characters, at least 
 ## Repository scope and license
 
 The public source code here is limited to the `index.html` and `app.py` clients, Codex plugin package, tests, and integration documentation. The web application, API implementation, SMTP infrastructure, and other private product code are not included. The [MIT license](LICENSE) applies only to this repository's public clients, plugin package, and documentation, **not** to the hosted service or private code.
+
+## Test a complete local verification form
+
+The [owned-application verification fixture](docs/VERIFICATION_TESTING.md) adds a real browser form, wrong-code rejection, single-use challenge and cleanup to the hosted API simulation. Python standard library only; no SMTP or AI-agent execution is claimed.
