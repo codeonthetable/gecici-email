@@ -1,9 +1,13 @@
 import io
 import json
+import ssl
 import unittest
+from contextlib import redirect_stdout
+from types import SimpleNamespace
+from unittest.mock import patch, MagicMock
 from urllib.error import HTTPError
 
-from app import ApiError, Client, NoRedirect, clean_text
+from app import ApiError, Client, NoRedirect, clean_text, tls_context, main
 
 
 class Response(io.BytesIO):
@@ -26,6 +30,44 @@ class FakeOpener:
 
 
 class ClientTests(unittest.TestCase):
+    def test_check_requests_only_health_and_never_displays_response_data(self):
+        output = io.StringIO()
+        with patch('app.Client') as factory, redirect_stdout(output):
+            factory.return_value.request.return_value = {'status': 'ok', 'unexpected': 'fixture-private-value'}
+            self.assertEqual(main(['--check']), 0)
+        factory.return_value.request.assert_called_once_with('GET', '/health')
+        self.assertEqual(json.loads(output.getvalue()), {'api_reachable': True, 'inbox_created': False})
+
+    def test_check_reports_failures_without_echoing_exception_data(self):
+        output = io.StringIO()
+        with patch('app.Client') as factory, redirect_stdout(output):
+            factory.return_value.request.side_effect = ApiError(0, 'fixture-private-value')
+            self.assertEqual(main(['--check']), 1)
+        self.assertNotIn('fixture-private-value', output.getvalue())
+        self.assertFalse(json.loads(output.getvalue())['api_reachable'])
+
+    def test_missing_health_status_is_not_success(self):
+        with patch('app.Client') as factory, redirect_stdout(io.StringIO()):
+            factory.return_value.request.return_value = {}
+            self.assertEqual(main(['--check']), 1)
+
+    def test_tls_keeps_hostname_and_certificate_verification(self):
+        context = tls_context()
+        self.assertTrue(context.check_hostname)
+        self.assertEqual(context.verify_mode, ssl.CERT_REQUIRED)
+
+    def test_missing_default_cafile_loads_existing_system_bundle(self):
+        context = MagicMock()
+        with patch('app.ssl.create_default_context', return_value=context), patch('app.ssl.get_default_verify_paths', return_value=SimpleNamespace(cafile=None)), patch('app.Path.is_file', return_value=True):
+            self.assertIs(tls_context(), context)
+        context.load_verify_locations.assert_called_once_with('/etc/ssl/cert.pem')
+
+    def test_configured_cafile_is_preserved(self):
+        context = MagicMock()
+        with patch('app.ssl.create_default_context', return_value=context), patch('app.ssl.get_default_verify_paths', return_value=SimpleNamespace(cafile='/configured/ca.pem')):
+            tls_context()
+        context.load_verify_locations.assert_not_called()
+
     def test_create_and_token_protected_read(self):
         opener = FakeOpener([
             Response(201, {"success": True, "inbox": {"address": "qa-123@gecici.email", "token": "secret"}}),

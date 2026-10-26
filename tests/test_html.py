@@ -38,7 +38,7 @@ class HtmlTests(unittest.TestCase):
         self.assertNotIn(".innerHTML", html)
         for element_id in (
             "createRandom", "createCustom", "connect", "refresh", "otp", "link",
-            "extend", "delete", "messageList", "preview", "newToken", "status",
+            "extend", "delete", "messageList", "preview", "newToken", "status", "checkConnection",
         ):
             self.assertIn(element_id, parser.ids)
 

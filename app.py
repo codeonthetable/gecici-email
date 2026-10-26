@@ -5,18 +5,29 @@ This is client code only. Mail delivery, storage, and the hosted API are not
 implemented in this repository.
 """
 
+import argparse
 import getpass
 import json
 import re
+import ssl
 import sys
 from datetime import datetime
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, Request, build_opener
 
 
 BASE_URL = "https://gecici.email/api/v1"
 TIMEOUT_SECONDS = 15
+
+
+def tls_context():
+    """Keep certificate and hostname checks; use the OS bundle when needed."""
+    context = ssl.create_default_context()
+    if not ssl.get_default_verify_paths().cafile and Path('/etc/ssl/cert.pem').is_file():
+        context.load_verify_locations('/etc/ssl/cert.pem')
+    return context
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -48,7 +59,7 @@ def display_time(milliseconds):
 
 class Client:
     def __init__(self, opener=None):
-        self.opener = opener or build_opener(NoRedirect)
+        self.opener = opener or build_opener(NoRedirect(), HTTPSHandler(context=tls_context()))
 
     def request(self, method, path, token=None, payload=None):
         headers = {"Accept": "application/json", "User-Agent": "gecici-email-client/1.0"}
@@ -127,7 +138,19 @@ def show_messages(result):
         print("No email has arrived. An empty inbox is not proof of delivery.")
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--check', action='store_true', help='Check HTTPS API health without creating an inbox')
+    args = parser.parse_args(argv)
+    if args.check:
+        try:
+            healthy = Client().request('GET', '/health').get('status') == 'ok'
+            print(json.dumps({'api_reachable': healthy, 'inbox_created': False}))
+            return 0 if healthy else 1
+        except (ApiError, OSError, ValueError) as error:
+            print(json.dumps({'api_reachable': False, 'inbox_created': False,
+                              'error_type': type(error).__name__}))
+            return 1
     print("gecici.email — terminal client")
     print("Free, receive-only inboxes. Your token stays in memory for this session; it is not saved to disk.")
     print("Use only for authorized testing. Avoid sensitive accounts and real user data.")

@@ -15,6 +15,7 @@ The downloadable clients and documentation in this repository are in English. Th
 | Integrate a script or test runner | [English API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
 | Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html) |
 | Add inbox and verification-code tools to browser-use | [Tested tool setup and API simulation](docs/BROWSER_USE.md) |
+| Test a complete browser verification form you control | [Runnable Python fixture and test results](docs/VERIFICATION_TESTING.md) |
 
 Türkçe: [Geçici mail](https://gecici.email/) · [Chrome eklentisi](https://gecici.email/chrome-eklentisi) · [API rehberi](https://gecici.email/api-dokuman)
 
@@ -34,6 +35,8 @@ It uses the Python standard library and the live hosted service. It creates one 
 
 Download the [repository ZIP](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip), extract it, and open `index.html` in a browser. No installation or Python is required for the browser app. It needs an internet connection to the hosted gecici.email service.
 
+Start with **Check API connection**. This makes one health request without creating an inbox. A successful connection does not prove mail delivery. If the browser blocks the local file's network access, use the [hosted inbox](https://gecici.email/en/) or the terminal client below.
+
 Alternatively, clone the repository:
 
 ```sh
@@ -44,6 +47,8 @@ cd gecici-email
 
 For a terminal or server environment, run `python3 app.py` with Python 3.9 or later (on Windows, `py app.py`). It has no third-party Python dependencies. Both clients can create an inbox, read messages and verification codes or links, extend the expiry, and delete the inbox.
 
+Check the connection first with `python3 app.py --check` (`py app.py --check` on Windows). Success prints `{"api_reachable": true, "inbox_created": false}` and exits with code 0. Failure exits with code 1 without printing response bodies. The client keeps certificate and hostname verification enabled; when Python has no default CA file, it loads `/etc/ssl/cert.pem` if that system bundle exists. If verification still fails, repair your Python/OS trust configuration; do not disable certificate checks.
+
 An inbox access token is shown when the inbox is created. The clients keep it only in memory during the current session, not on disk. Save it securely if you need to reconnect later. Email links are displayed but never opened automatically. These clients connect to the **hosted** service; downloading the repository does not install an offline mail server. The browser app loads no external scripts, analytics, or ads.
 
 Run the local test suite with:
@@ -51,6 +56,8 @@ Run the local test suite with:
 ```sh
 python3 -m unittest discover -s tests -v
 ```
+
+The local form tests bind to loopback (`127.0.0.1`); sandboxed runners must permit that local socket. Optional browser-use tests need Python 3.11+ and the package described in [its setup guide](docs/BROWSER_USE.md); otherwise they are skipped. The live MCP test is opt-in and carries `qa-test` labels on tool calls and cleanup. Do not count test requests as product usage.
 
 ## Connect Codex
 

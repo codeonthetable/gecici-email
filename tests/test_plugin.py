@@ -4,8 +4,11 @@ import json
 import os
 from pathlib import Path
 import unittest
+from unittest.mock import patch
+import io
 from urllib.parse import quote
 from urllib.request import Request, urlopen
+from app import tls_context
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,7 +16,26 @@ PLUGIN = ROOT / "plugins" / "gecici-email"
 MCP_URL = "https://gecici.email/mcp"
 
 
+def qa_request(url, *, data=None, method=None, token=None):
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream', 'X-Gecici-Client': 'qa-test'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    return urlopen(Request(url, data=data, method=method, headers=headers), timeout=20, context=tls_context())
+
+
 class PluginPackageTests(unittest.TestCase):
+    def test_live_test_requests_and_cleanup_are_qa_tagged(self):
+        for url, kwargs in [(MCP_URL, {'data': b'{}'}), ('https://gecici.email/api/v1/inbox/fixture', {'method': 'DELETE', 'token': 'fixture-only'})]:
+            with patch(__name__ + '.urlopen', return_value=io.BytesIO(b'{}')) as opened:
+                with qa_request(url, **kwargs):
+                    pass
+            request = opened.call_args[0][0]
+            self.assertEqual(request.get_header('X-gecici-client'), 'qa-test')
+            self.assertTrue(opened.call_args[1]['context'].check_hostname)
+            if kwargs.get('method') == 'DELETE':
+                self.assertEqual(request.get_method(), 'DELETE')
+                self.assertEqual(request.get_header('Authorization'), 'Bearer fixture-only')
+
     def test_manifest_marketplace_and_mcp_target(self):
         manifest = json.loads((PLUGIN / ".codex-plugin" / "plugin.json").read_text())
         connection = json.loads((PLUGIN / ".mcp.json").read_text())
@@ -31,11 +53,7 @@ class PluginPackageTests(unittest.TestCase):
 class LivePluginTests(unittest.TestCase):
     def rpc(self, method, params=None):
         body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params or {}}).encode()
-        request = Request(MCP_URL, data=body, headers={
-            "Content-Type": "application/json",
-            "Accept": "application/json, text/event-stream",
-        })
-        with urlopen(request, timeout=20) as response:
+        with qa_request(MCP_URL, data=body) as response:
             return json.load(response)
 
     def call(self, name, arguments):
@@ -71,11 +89,10 @@ class LivePluginTests(unittest.TestCase):
             self.assertFalse(summary["isError"])
             self.assertFalse(json.loads(summary["content"][0]["text"])["hasMessage"])
         finally:
-            request = Request(
+            with qa_request(
                 "https://gecici.email/api/v1/inbox/" + quote(address, safe=""),
-                headers={"Authorization": "Bearer " + token}, method="DELETE",
-            )
-            with urlopen(request, timeout=20) as response:
+                token=token, method="DELETE",
+            ) as response:
                 self.assertEqual(response.status, 200)
 
 

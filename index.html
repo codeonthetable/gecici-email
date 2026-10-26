@@ -55,6 +55,7 @@
   <p class="intro">Free, short-lived, receive-only email inboxes. This file runs in your browser and connects to the hosted <a href="https://gecici.email" target="_blank" rel="noopener noreferrer">gecici.email</a> service over HTTPS.</p>
 
   <div id="status" class="status" role="status" aria-live="polite">Create a random inbox or connect with an existing address and token.</div>
+  <div class="actions"><button id="checkConnection">Check API connection</button><span class="muted">Checks connectivity without creating an inbox.</span></div>
 
   <div class="grid">
     <section class="card">
@@ -108,7 +109,7 @@
     </section>
   </div>
 
-  <footer>For authorized development and testing only. Do not use for sensitive accounts or real user data. Delivery from external senders is not guaranteed. Read the <a href="https://gecici.email/gizlilik-ve-guvenlik" target="_blank" rel="noopener noreferrer">privacy and retention information (Turkish)</a>.</footer>
+  <footer>For authorized development and testing only. Do not use for sensitive accounts or real user data. Delivery from external senders is not guaranteed. Read the <a href="https://gecici.email/en/privacy.html" target="_blank" rel="noopener noreferrer">privacy and retention information</a> or the <a href="https://gecici.email/en/email-verification-testing.html" target="_blank" rel="noopener noreferrer">tested verification guide</a>.</footer>
 </main>
 <script>
 (() => {
@@ -149,6 +150,19 @@
 
   function path(address) { return `/inbox/${encodeURIComponent(address)}`; }
   function time(value) { return value ? new Date(value).toISOString() : 'unknown'; }
+
+  async function checkConnection() {
+    const button = byId('checkConnection');
+    button.disabled = true;
+    status('Checking API connection…');
+    try {
+      const result = await api('GET', '/health');
+      if (result.status !== 'ok') throw new Error('Unexpected health response.');
+      status('API connection works. No inbox was created; this does not test mail delivery.');
+    } catch {
+      status('Could not verify the API connection. Check your network or browser restrictions, then retry. No inbox was created.', true);
+    } finally { button.disabled = false; }
+  }
 
   function showInbox(inbox, showToken) {
     current = { address: inbox.address, token: inbox.token };
@@ -262,6 +276,7 @@
     }
   }
 
+  byId('checkConnection').addEventListener('click', checkConnection);
   byId('createRandom').addEventListener('click', () => create(null));
   byId('createCustom').addEventListener('click', () => create(byId('prefix').value.trim()));
   byId('connect').addEventListener('click', connect);
