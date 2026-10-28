@@ -1,6 +1,6 @@
 # gecici.email — free temporary email for people and AI agents
 
-[Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the browser app (ZIP)](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
+[Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the developer kit (ZIP)](https://github.com/codeonthetable/gecici-email/releases/download/developer-kit-2026.10.28/gecici-email-developer-kit-2026.10.28.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
 
 gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
@@ -33,7 +33,7 @@ It uses the Python standard library and the live hosted service. It creates one 
 
 ## Download and run
 
-Download the [repository ZIP](https://github.com/codeonthetable/gecici-email/archive/refs/heads/main.zip), extract it, and open `index.html` in a browser. No installation or Python is required for the browser app. It needs an internet connection to the hosted gecici.email service.
+Download the [developer kit ZIP](https://github.com/codeonthetable/gecici-email/releases/download/developer-kit-2026.10.28/gecici-email-developer-kit-2026.10.28.zip), extract it, and open `START_HERE.md` for English/Turkish instructions. The [release page](https://github.com/codeonthetable/gecici-email/releases/tag/developer-kit-2026.10.28) includes checksums and the pinned source commit. To use the browser client, open `index.html` in a browser. No installation or Python is required for the browser app. It needs an internet connection to the hosted gecici.email service.
 
 Start with **Check API connection**. This makes one health request without creating an inbox. A successful connection does not prove mail delivery. If the browser blocks the local file's network access, use the [hosted inbox](https://gecici.email/en/) or the terminal client below.
 
