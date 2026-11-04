@@ -84,6 +84,8 @@ Enable the connector in the conversation where you need it. See [Claude's offici
 
 ## Connect other AI agents or applications
 
+The hosted endpoint is listed in the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.codeonthetable%2Fgecici-email/versions/latest) as `io.github.codeonthetable/gecici-email`. The [public metadata](server.json) declares the direct Streamable HTTP URL; no local server installation or general API key is needed. Protected inbox reads still require the inbox-specific token. Registry listing is a discovery record, not a third-party endorsement.
+
 Add `https://gecici.email/mcp` to a client that supports remote Streamable HTTP MCP. For REST clients, use `https://gecici.email/api/v1` and the [REST examples](docs/REST.md). A typical authorized test flow is:
 
 1. Call `gecici_create_inbox` to receive an address, access token, and expiry.
