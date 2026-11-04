@@ -1,0 +1,35 @@
+name: Publish hosted MCP directory entry
+on:
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: publish-mcp-registry
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'codeonthetable/gecici-email' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out public metadata
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Install verified official publisher
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/modelcontextprotocol/registry/releases/download/v1.8.7/mcp-publisher_linux_amd64.tar.gz \
+            --output /tmp/mcp-publisher.tar.gz
+          echo '00b21004149a4ce66f0782508ae4a2bce67d1bea395a8da0bd8028159fb59579  /tmp/mcp-publisher.tar.gz' | sha256sum --check --strict
+          tar -xzf /tmp/mcp-publisher.tar.gz -C /tmp mcp-publisher
+      - name: Publish using short-lived GitHub identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/mcp-publisher login github-oidc
+          /tmp/mcp-publisher publish

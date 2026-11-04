@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.codeonthetable/gecici-email",
+  "title": "gecici.email - Temporary Email for QA",
+  "description": "Temporary inboxes for authorized QA, with token-protected message, code and link reading.",
+  "version": "1.0.0",
+  "websiteUrl": "https://gecici.email/en/agents.html",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://gecici.email/mcp"
+    }
+  ]
+}
