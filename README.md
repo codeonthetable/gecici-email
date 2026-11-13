@@ -19,6 +19,18 @@ The downloadable clients and documentation in this repository are in English. Th
 
 Türkçe: [Geçici mail](https://gecici.email/) · [Chrome eklentisi](https://gecici.email/chrome-eklentisi) · [API rehberi](https://gecici.email/api-dokuman)
 
+## Try hosted MCP with one file
+
+Review [examples/mcp-quickstart.py](examples/mcp-quickstart.py) in the current checkout, or [download the same source](https://gecici.email/examples/mcp-quickstart.py). Run:
+
+```sh
+python3 examples/mcp-quickstart.py --run
+```
+
+No account, global API key, npm package or third-party Python dependency is needed. The example initializes MCP, creates its own inbox, rejects a wrong-token deletion, reads a fictional message, and deletes the inbox through MCP. It prints only result flags. Every request is tagged `qa-test`; this is an API simulation, not external SMTP delivery, a model run or real-user adoption.
+
+For your own integration: keep the creation token, pass the matching address/token to read tools, then call `gecici_delete_inbox` after the task. Successful hosted tools provide both JSON text and `structuredContent`. Check `isError` and empty/timeout results before treating a read as successful. For existing Claude connectors, refresh the tool list to discover the cleanup tool. [Cursor configuration and troubleshooting](https://gecici.email/en/cursor-temporary-email-mcp.html).
+
 ## Try a complete REST and MCP QA flow
 
 After downloading or cloning this repository, review [`examples/qa-flow.py`](examples/qa-flow.py) and run:
@@ -91,6 +103,7 @@ Add `https://gecici.email/mcp` to a client that supports remote Streamable HTTP 
 1. Call `gecici_create_inbox` to receive an address, access token, and expiry.
 2. Use only the address in the workflow you are authorized to test. Keep the token private.
 3. Read messages, a verification code, or a verification link with **both** the address and token. An empty inbox or missing code is not a successful delivery result.
+4. Call `gecici_delete_inbox` with that same pair after the test; verify `deleted: true`.
 
 Do not put the token in third-party websites, public prompts, source control, or logs. The tools extract links but do not open them. The service does not bypass CAPTCHA or account-verification safeguards, and delivery from external senders is not guaranteed. Do not use it for sensitive accounts or real user data.
 
