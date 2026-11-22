@@ -1,6 +1,6 @@
 # gecici.email — free temporary email for people and AI agents
 
-[Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the developer kit (ZIP)](https://github.com/codeonthetable/gecici-email/releases/download/developer-kit-2026.10.28/gecici-email-developer-kit-2026.10.28.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
+[Python / Node SDK 1.2.0](https://github.com/codeonthetable/gecici-email/releases/tag/sdk-v1.2.0) · [Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the developer kit (ZIP)](https://github.com/codeonthetable/gecici-email/releases/download/developer-kit-2026.10.28/gecici-email-developer-kit-2026.10.28.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
 
 gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
@@ -12,12 +12,32 @@ The downloadable clients and documentation in this repository are in English. Th
 | --- | --- |
 | Keep a temporary inbox in the Chrome toolbar | [Chrome extension and installation guide](https://gecici.email/en/chrome-extension.html) |
 | Use an inbox without installing anything | [Hosted web inbox](https://gecici.email/en/) |
-| Integrate a script or test runner | [English API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
+| Integrate a Python / Node script or test runner | [Install SDK 1.2.0](#python-and-nodejs-sdks), [API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
 | Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html) |
 | Add inbox and verification-code tools to browser-use | [Tested tool setup and API simulation](docs/BROWSER_USE.md) |
 | Test a complete browser verification form you control | [Runnable Python fixture and test results](docs/VERIFICATION_TESTING.md) |
 
 Türkçe: [Geçici mail](https://gecici.email/) · [Chrome eklentisi](https://gecici.email/chrome-eklentisi) · [API rehberi](https://gecici.email/api-dokuman)
+
+## Python and Node.js SDKs
+
+Create an inbox, give its address to your own application, then match a new verification email by creation time, sender, subject and expected link hostname. The clients retain the inbox token and support explicit cleanup.
+
+[SDK 1.2.0 downloads and checksums](https://github.com/codeonthetable/gecici-email/releases/tag/sdk-v1.2.0) · [Python API and example](https://gecici.email/downloads/python/README.md) · [Node.js / TypeScript API and example](https://gecici.email/downloads/typescript/README.md)
+
+```sh
+# Python 3.9+; use a virtual environment
+python -m pip install https://github.com/codeonthetable/gecici-email/releases/download/sdk-v1.2.0/gecici_email-1.2.0-py3-none-any.whl
+
+# Node.js 22+
+npm install https://github.com/codeonthetable/gecici-email/releases/download/sdk-v1.2.0/gecici-email-1.2.0.tgz
+```
+
+Use `GeciciEmail()` in Python or `new GeciciEmail()` in Node for regular integrations. The guides also show explicitly labelled QA smoke tests. Outcomes are `ready`, `pending`, `ambiguous` and `blocked`; only `ready` contains a code or link. Extraction is not proof that your application accepted it. Links are never opened by the client.
+
+These are direct-download SDK packages, not PyPI/npm registry publications. SDK artifacts retain their existing proprietary/UNLICENSED metadata; this repository's MIT license does not relicense those artifacts. Python SDK source is in the `.tar.gz`; the Node package includes TypeScript source.
+
+Türkçe: Python veya Node paketini kurun, kutu adresini kendi uygulamanıza verin, yeni doğrulama iletisini eşleştirin ve iş bitince kutuyu silin. [Türkçe ajan rehberi](https://gecici.email/ai-ajanlar).
 
 ## Try hosted MCP with one file
 
@@ -29,7 +49,7 @@ python3 examples/mcp-quickstart.py --run
 
 No account, global API key, npm package or third-party Python dependency is needed. The example initializes MCP, creates its own inbox, rejects a wrong-token deletion, reads a fictional message, and deletes the inbox through MCP. It prints only result flags. Every request is tagged `qa-test`; this is an API simulation, not external SMTP delivery, a model run or real-user adoption.
 
-For your own integration: keep the creation token, pass the matching address/token to read tools, then call `gecici_delete_inbox` after the task. Successful hosted tools provide both JSON text and `structuredContent`. Check `isError` and empty/timeout results before treating a read as successful. For existing Claude connectors, refresh the tool list to discover the cleanup tool. [Cursor configuration and troubleshooting](https://gecici.email/en/cursor-temporary-email-mcp.html).
+For your own integration: keep the creation token, pass the matching address/token to read tools, then call `gecici_delete_inbox` after the task. Successful hosted tools provide both JSON text and `structuredContent`. Check `isError` and empty/timeout results before treating a read as successful. The hosted server now exposes seven tools, including `gecici_wait_for_verification` and `gecici_delete_inbox`. For existing Claude connectors, refresh the tool list to discover current tools. Prefer matched verification for new workflows: pass `since=inbox.createdAt`, sender/subject filters, and `expected_link_host` for HTTPS links. [Cursor configuration and troubleshooting](https://gecici.email/en/cursor-temporary-email-mcp.html).
 
 ## Try a complete REST and MCP QA flow
 
@@ -102,7 +122,7 @@ Add `https://gecici.email/mcp` to a client that supports remote Streamable HTTP 
 
 1. Call `gecici_create_inbox` to receive an address, access token, and expiry.
 2. Use only the address in the workflow you are authorized to test. Keep the token private.
-3. Read messages, a verification code, or a verification link with **both** the address and token. An empty inbox or missing code is not a successful delivery result.
+3. Call `gecici_wait_for_verification` with **both** the address and token, `since` set to the inbox creation time in Unix milliseconds, and your known sender/subject filters. For links, set the exact `expected_link_host` independently of the email. Only `ready` returns a value; `pending`, `ambiguous` and `blocked` are not successful extraction.
 4. Call `gecici_delete_inbox` with that same pair after the test; verify `deleted: true`.
 
 Do not put the token in third-party websites, public prompts, source control, or logs. The tools extract links but do not open them. The service does not bypass CAPTCHA or account-verification safeguards, and delivery from external senders is not guaranteed. Do not use it for sensitive accounts or real user data.
