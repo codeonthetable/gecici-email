@@ -1,32 +1,112 @@
 {
   "name": "gecici-email",
-  "version": "0.1.0",
-  "description": "Create and read token-protected temporary inboxes for authorized testing through the hosted gecici.email MCP server.",
+  "version": "0.2.1",
+  "description": "Receive temporary email for authorized development and QA through the hosted gecici.email MCP server.",
   "author": {
     "name": "Datakobi Bilişim Teknoloji",
-    "email": "iletisim@gecici.email",
     "url": "https://gecici.email"
   },
   "homepage": "https://gecici.email/en/agents.html",
   "repository": "https://github.com/codeonthetable/gecici-email",
-  "license": "MIT",
-  "keywords": ["temporary-email", "qa", "mcp", "inbox"],
+  "keywords": [
+    "temporary-email",
+    "qa",
+    "mcp",
+    "inbox"
+  ],
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "gecici.email",
-    "shortDescription": "Temporary inboxes for authorized testing",
-    "longDescription": "Create a receive-only inbox and read its messages, verification codes and links using the private access token. The plugin connects to the hosted gecici.email service; no mail server is installed locally.",
-    "developerName": "Datakobi Bilişim Teknoloji",
-    "category": "Productivity",
-    "capabilities": ["Read", "Write"],
+    "shortDescription": "Temporary inboxes for testing",
+    "longDescription": "Create a temporary receive-only inbox for an authorized development or QA workflow. Read messages, obtain an extracted summary, match verification codes or HTTPS links by time, sender and subject, and delete the test inbox. Inbox reads and deletion use a private per-inbox access token returned on creation. This service processes email contents and may return verification codes and links; it does not send email or complete verification in another application. Default inbox lifetime is 60 minutes. Do not use it for sensitive or long-term accounts.",
+    "developerName": "datakobi",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Create inboxes",
+      "Read email",
+      "Extract verification results",
+      "Delete test inboxes"
+    ],
     "websiteURL": "https://gecici.email/en/",
+    "supportURL": "https://gecici.email/en/privacy.html",
     "privacyPolicyURL": "https://gecici.email/en/privacy.html",
+    "termsOfServiceURL": "https://gecici.email/en/terms.html",
     "defaultPrompt": [
       "Create a temporary inbox for my authorized QA test.",
-      "Check my temporary inbox for a verification code.",
-      "Summarize the latest message in my temporary inbox."
+      "Check my test inbox for a new matching verification email.",
+      "Summarize the messages in my test inbox."
     ],
-    "brandColor": "#FF4E00"
+    "brandColor": "#FF4E00",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png"
   },
-  "mcpServers": "./.mcp.json"
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/temporary-inbox/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Create a fresh QA inbox; protocol tested with own disposable data",
+              "prompt": "Create a temporary inbox for my own application QA. Keep its private token in tool context.",
+              "tools_triggered": "gecici_create_inbox",
+              "expected_behavior": "Create a new receive-only inbox with ttlSeconds=3600. No global account credentials required. The per-inbox token is an access credential and must remain private."
+            },
+            {
+              "description": "Read and summarize an own synthetic QA message",
+              "prompt": "Read the messages in my test inbox and summarize the latest one.",
+              "tools_triggered": "gecici_get_inbox_messages, gecici_get_ai_summary",
+              "expected_behavior": "Use the token returned by create. A new empty inbox returns count=0 / hasMessage=false. For a nonempty test, insert a fictional message using POST /api/v1/simulate with Authorization: Bearer <fresh inbox token> and JSON to/from/subject/text; return its message count and extracted summary. This tests the simulator-to-inbox path, not external SMTP delivery."
+            },
+            {
+              "description": "Match a new QA verification code",
+              "prompt": "Read the verification code from my QA test email matching the sender, subject and new inbox creation time. Do not submit it anywhere.",
+              "tools_triggered": "gecici_wait_for_verification",
+              "expected_behavior": "Using an own synthetic code message, set since=createdAt, kind=otp, the known sender and subject_contains, timeout_seconds=0. Expect ready and the fixture code, or pending before insertion. The tool processes and returns a verification code; extraction does not authenticate the user in another application."
+            },
+            {
+              "description": "Match an own synthetic HTTPS verification link",
+              "prompt": "Find the verification link for my test application app.example.invalid. Do not open it.",
+              "tools_triggered": "gecici_wait_for_verification",
+              "expected_behavior": "Insert an own synthetic message with an HTTPS link on app.example.invalid through the authenticated QA simulator. Use kind=link, since=createdAt, subject_contains and expected_link_host=app.example.invalid. Expect ready with the exact synthetic link; do not visit it."
+            },
+            {
+              "description": "Delete the disposable QA inbox and verify loss of read access",
+              "prompt": "Delete the inbox and messages created for this QA run, then confirm it can no longer be read.",
+              "tools_triggered": "gecici_delete_inbox, gecici_get_inbox_messages",
+              "expected_behavior": "Using the own inbox token, deletion returns deleted=true. A subsequent read isError=true with no mailbox contents. Preserve the token until cleanup succeeds."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Missing inbox token",
+              "prompt": "Try to read an inbox without an access token.",
+              "tools_triggered": "gecici_get_inbox_messages",
+              "expected_behavior": "The tool denies missing-token arguments (isError=true) and returns no mailbox data. The assistant should not guess credentials."
+            },
+            {
+              "description": "Incorrect token for an owned test inbox",
+              "prompt": "Verify that a deliberately incorrect token cannot read my disposable QA inbox.",
+              "tools_triggered": "gecici_get_inbox_messages",
+              "expected_behavior": "Use only the reviewer own inbox; a random incorrect token is denied with isError=true and no mailbox contents. Correct-token access remains available for cleanup."
+            },
+            {
+              "description": "Wrong expected verification hostname",
+              "prompt": "For my test message link on app.example.invalid, require different.example.invalid and check it once.",
+              "tools_triggered": "gecici_wait_for_verification",
+              "expected_behavior": "With kind=link, known test subject and expected_link_host=different.example.invalid, return blocked with no verification_link. Do not open the rejected URL or complete application verification."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "No products are sold and no payments are processed by this plugin.",
+        "demo_recording_url": "https://gecici.email/review/gecici-email-mcp-0.2.1.mp4"
+      },
+      "publication": {
+        "countries": [],
+        "release_notes": "Initial public release candidate: seven hosted MCP tools for short-lived receive-only QA inboxes, message summaries, matched verification results and cleanup. Includes a tested protocol walkthrough with synthetic data and explicit token-handling guidance."
+      }
+    }
+  }
 }
