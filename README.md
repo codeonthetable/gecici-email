@@ -1,10 +1,26 @@
-# gecici.email — free temporary email for people and AI agents
+# gecici.email — temporary email API and MCP server for AI agents
 
 [Python / Node SDK 1.2.0](https://github.com/codeonthetable/gecici-email/releases/tag/sdk-v1.2.0) · [Chrome extension](https://gecici.email/en/chrome-extension.html) · [Download the developer kit (ZIP)](https://github.com/codeonthetable/gecici-email/releases/download/developer-kit-2026.10.28/gecici-email-developer-kit-2026.10.28.zip) · [Use the hosted website](https://gecici.email/en/) · [MCP endpoint](https://gecici.email/mcp) · [REST examples](docs/REST.md) · [Privacy and retention](https://gecici.email/en/privacy.html)
 
 gecici.email provides short-lived, receive-only inboxes for development and QA workflows you are authorized to test. The hosted service is free to use. This repository contains downloadable clients and integration examples; it does **not** contain the mail server or private product implementation.
 
 The downloadable clients and documentation in this repository are in English. The hosted site has an [English inbox and guide](https://gecici.email/en/) as well as Turkish pages.
+
+## Connect an AI agent — no local server required
+
+Add this **Streamable HTTP MCP** URL to your client's remote-server configuration:
+
+```text
+https://gecici.email/mcp?source=github
+```
+
+No signup or general API key is required. The service returns a separate token for each inbox. Ask your agent: “Create a temporary inbox for my authorized email-verification test, wait for a new message matching my sender and subject, then delete the inbox when finished.”
+
+For verification links, supply your application's expected hostname. `gecici_wait_for_verification` returns `ready`, `pending`, `ambiguous` or `blocked`; only `ready` contains a value. The service receives mail; it does not send mail or replace a permanent mailbox.
+
+[Client setup and troubleshooting](https://gecici.email/en/agents.html?utm_source=github&utm_medium=referral&utm_campaign=mcp-discovery) · [Seven MCP tools and lifecycle](#connect-other-ai-agents-or-applications) · [Runnable QA example](#try-hosted-mcp-with-one-file)
+
+The optional `source=github` label measures aggregate use of this setup link, not your identity. You can remove it and use `https://gecici.email/mcp` with the same functionality. [Measurement and privacy](https://gecici.email/en/privacy.html).
 
 ## Choose how to use it
 
@@ -13,7 +29,7 @@ The downloadable clients and documentation in this repository are in English. Th
 | Keep a temporary inbox in the Chrome toolbar | [Chrome extension and installation guide](https://gecici.email/en/chrome-extension.html) |
 | Use an inbox without installing anything | [Hosted web inbox](https://gecici.email/en/) |
 | Integrate a Python / Node script or test runner | [Install SDK 1.2.0](#python-and-nodejs-sdks), [API guide](https://gecici.email/en/api.html) and [REST examples](docs/REST.md) |
-| Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html) |
+| Give an AI agent inbox tools | [MCP setup guide](https://gecici.email/en/agents.html?utm_source=github&utm_medium=referral&utm_campaign=mcp-discovery) |
 | Add inbox and verification-code tools to browser-use | [Tested tool setup and API simulation](docs/BROWSER_USE.md) |
 | Test a complete browser verification form you control | [Runnable Python fixture and test results](docs/VERIFICATION_TESTING.md) |
 
@@ -109,7 +125,7 @@ Restart Codex or open a new task after installation, then ask it to create a tem
 In Claude, open **Customize → Connectors → Add custom connector** and enter this remote MCP URL:
 
 ```text
-https://gecici.email/mcp
+https://gecici.email/mcp?source=github
 ```
 
 Enable the connector in the conversation where you need it. See [Claude's official custom connector guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for current menus and plan availability. Connecting Claude does not upload this repository or its source code to Claude.
