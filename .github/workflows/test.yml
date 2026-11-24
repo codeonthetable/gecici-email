@@ -7,9 +7,17 @@ on:
 jobs:
   client:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.9', '3.12']
+        exclude:
+          - os: ubuntu-latest
+            python-version: '3.9'
+        include:
+          # Python 3.9 builds are unavailable for Ubuntu 26.04 (ubuntu-latest).
+          - os: ubuntu-22.04
+            python-version: '3.9'
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
